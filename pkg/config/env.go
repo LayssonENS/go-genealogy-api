@@ -15,9 +15,9 @@ type Environment struct {
 type DbConfig struct {
 	User     string `env:"DB_USER,default=postgres"`
 	Port     string `env:"DB_PORT,default=5432"`
-	Password string `env:"DB_PASSWORD,default="`
+	Password string `env:"DB_PASSWORD,default=postgres"`
 	Host     string `env:"DB_HOST,default=localhost"`
-	Name     string `env:"DB_NAME,default=person"`
+	Name     string `env:"DB_NAME,default=postgres"`
 }
 
 var Env Environment

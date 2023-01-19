@@ -24,7 +24,7 @@ func main() {
 	ctx := context.Background()
 
 	log := logrus.New()
-	log.SetFormatter(&logrus.JSONFormatter{})
+	//log.SetFormatter(&logrus.JSONFormatter{})
 
 	dbInstance, err := database.NewPostgresConnection(config.GetEnv().DbConfig)
 	if err != nil {

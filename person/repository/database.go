@@ -5,6 +5,7 @@ import (
 	"github.com/LayssonENS/go-genealogy-api/pkg/config"
 	"github.com/golang-migrate/migrate/v4"
 	"github.com/golang-migrate/migrate/v4/database/postgres"
+	_ "github.com/golang-migrate/migrate/v4/source/file"
 	"github.com/pkg/errors"
 )
 
@@ -16,7 +17,7 @@ func DBMigrate(dbInstance *sql.DB, dbConfig config.DbConfig) error {
 	}
 
 	migrations, err := migrate.NewWithDatabaseInstance(
-		"file://migrations",
+		"file://person/repository/migrations",
 		dbConfig.Name, driver)
 	if err != nil {
 		return errors.Wrap(err, "failed to create migrate instance")

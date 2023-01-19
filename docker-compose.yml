@@ -6,7 +6,7 @@ services:
     ports:
       - 9090:9090
     environment:
-      - DB_HOST=person
+      - DB_HOST=localhost
       - DB_USER=postgres
       - DB_PASSWORD=
     depends_on:
