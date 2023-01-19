@@ -1,0 +1,24 @@
+version: "3.7"
+services:
+  web:
+    image: go-genealogy-api
+    container_name: genealogy_api
+    ports:
+      - 9090:9090
+    environment:
+      - DB_HOST=person
+      - DB_USER=postgres
+      - DB_PASSWORD=
+    depends_on:
+      - database
+    restart: always
+
+  database:
+    image: postgres
+    container_name: database
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DATABASE: "person"
+      POSTGRES_USER: "postgres"
+      POSTGRES_PASSWORD: "postgres"
