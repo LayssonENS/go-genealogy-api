@@ -16,6 +16,6 @@ func NewPersonHandler(routerGroup *gin.Engine, us domain.PersonUseCase) {
 	routerGroup.GET("/articles", handler.GetByID)
 }
 
-func (h PersonHandler) GetByID(context *gin.Context) {
+func (h *PersonHandler) GetByID(c *gin.Context) {
 
 }
