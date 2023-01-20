@@ -1,8 +1,8 @@
 package repository
 
 import (
-	"context"
 	"database/sql"
+	"fmt"
 	"github.com/LayssonENS/go-genealogy-api/domain"
 	"github.com/gin-gonic/gin"
 )
@@ -18,21 +18,27 @@ func NewPostgresPersonRepository(db *sql.DB) domain.PersonRepository {
 	}
 }
 
-func (p *postgresPersonRepo) getOne(ctx context.Context, query string, args ...interface{}) (res domain.Person, err error) {
-	stmt, err := p.DB.PrepareContext(ctx, query)
+func (p *postgresPersonRepo) GetByID(c *gin.Context, id int64) (domain.Person, error) {
+	var person domain.Person
+	err := p.DB.QueryRow(
+		"SELECT id, name, created_at FROM person WHERE id = $1", id).Scan(
+		&person.Id, &person.Name, &person.CreatedAt)
 	if err != nil {
-		return domain.Person{}, err
+		if err == sql.ErrNoRows {
+			return person, fmt.Errorf("No data found with ID %d", id)
+		}
+		return person, err
 	}
-	row := stmt.QueryRowContext(ctx, args...)
-	res = domain.Person{}
+	return person, nil
 
-	err = row.Scan(
-		&res.Name,
-	)
-	return
 }
 
-func (p *postgresPersonRepo) GetByID(c *gin.Context, id int64) (domain.Person, error) {
-	query := `SELECT id, name, created_at, updated_at FROM person WHERE id=?`
-	return p.getOne(c, query, id)
+func (p *postgresPersonRepo) CreatePerson(c *gin.Context, person domain.Person) error {
+	query := `INSERT INTO person (name) VALUES ($1) `
+	_, err := p.DB.Exec(query, person.Name)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

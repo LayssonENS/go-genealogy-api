@@ -1,7 +1,7 @@
 CREATE TABLE person (
     id SERIAL PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
-    created_at timestamp NOT NULL
+    created_at TIMESTAMP DEFAULT NOW()
 );
 
 
