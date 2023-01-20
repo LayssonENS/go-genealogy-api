@@ -3,11 +3,14 @@ package main
 import (
 	"context"
 	"fmt"
+	"github.com/LayssonENS/go-genealogy-api/config"
+	"github.com/LayssonENS/go-genealogy-api/database"
 	personHttpDelivery "github.com/LayssonENS/go-genealogy-api/person/delivery/http"
-	"github.com/LayssonENS/go-genealogy-api/person/repository"
-	"github.com/LayssonENS/go-genealogy-api/person/usecase"
-	"github.com/LayssonENS/go-genealogy-api/pkg/config"
-	"github.com/LayssonENS/go-genealogy-api/pkg/database"
+	personRepository "github.com/LayssonENS/go-genealogy-api/person/repository"
+	personUCase "github.com/LayssonENS/go-genealogy-api/person/usecase"
+	relationshipHttpDelivery "github.com/LayssonENS/go-genealogy-api/relationships/delivery/http"
+	relationshipsRepository "github.com/LayssonENS/go-genealogy-api/relationships/repository"
+	relationshipUCase "github.com/LayssonENS/go-genealogy-api/relationships/usecase"
 	"github.com/gin-gonic/gin"
 	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
@@ -32,7 +35,7 @@ func main() {
 		return
 	}
 
-	err = repository.DBMigrate(dbInstance, config.GetEnv().DbConfig)
+	err = database.DBMigrate(dbInstance, config.GetEnv().DbConfig)
 	if err != nil {
 		log.WithError(err).Fatal("failed to migrate")
 		return
@@ -40,10 +43,14 @@ func main() {
 
 	router := gin.Default()
 
-	personRepository := repository.NewPostgresPersonRepository(dbInstance)
-	userService := usecase.NewPersonUseCase(personRepository)
+	pRepository := personRepository.NewPostgresPersonRepository(dbInstance)
+	personService := personUCase.NewPersonUseCase(pRepository)
 
-	personHttpDelivery.NewPersonHandler(router, userService)
+	rRepository := relationshipsRepository.NewPostgresRelationshipRepository(dbInstance)
+	relationshipService := relationshipUCase.NewRelationshipUseCase(rRepository)
+
+	personHttpDelivery.NewPersonHandler(router, personService)
+	relationshipHttpDelivery.NewRelationshipHandler(router, relationshipService)
 	router.GET("/auth/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	gin.SetMode(gin.ReleaseMode)

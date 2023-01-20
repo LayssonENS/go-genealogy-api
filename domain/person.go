@@ -6,7 +6,7 @@ import (
 )
 
 type Person struct {
-	Id        int64     `json:"id"`
+	ID        int64     `json:"id"`
 	Name      string    `json:"name" validate:"required"`
 	CreatedAt time.Time `json:"created_at"`
 }
