@@ -33,6 +33,6 @@ func (p *postgresPersonRepo) getOne(ctx context.Context, query string, args ...i
 }
 
 func (p *postgresPersonRepo) GetByID(c *gin.Context, id int64) (domain.Person, error) {
-	query := `SELECT id, name, created_at, updated_at FROM author WHERE id=?`
+	query := `SELECT id, name, created_at, updated_at FROM person WHERE id=?`
 	return p.getOne(c, query, id)
 }
