@@ -15,7 +15,7 @@ func NewRelationshipUseCase(relationshipRepository domain.RelationshipRepository
 	}
 }
 
-func (a *relationshipUseCase) GetRelationshipByID(c *gin.Context, id int64) (domain.Relationship, error) {
+func (a *relationshipUseCase) GetRelationshipByID(c *gin.Context, id int64) (*domain.FamilyMembers, error) {
 	person, err := a.relationshipRepository.GetRelationshipByID(c, id)
 	if err != nil {
 		return person, err

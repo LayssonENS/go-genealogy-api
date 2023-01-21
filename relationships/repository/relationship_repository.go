@@ -17,22 +17,64 @@ func NewPostgresRelationshipRepository(db *sql.DB) domain.RelationshipRepository
 	}
 }
 
-func (p *postgresPersonRepo) GetRelationshipByID(c *gin.Context, id int64) (domain.Relationship, error) {
-	var relationship domain.Relationship
+func (p *postgresPersonRepo) GetRelationshipByID(c *gin.Context, id int64) (*domain.FamilyMembers, error) {
+	var relationships []domain.FamilyMember
+	familyMembers := &domain.FamilyMembers{}
 
-	result, _ := p.getFamilyTree("laysson")
-	println(result)
-
-	err := p.DB.QueryRow(
-		"SELECT id, person_id, related_person_id, relationship  FROM relationships WHERE id = $1", id).Scan(
-		&relationship.ID, &relationship.PersonID, &relationship.Relationship, &relationship.RelatedPersonID)
+	rows, err := p.DB.Query("WITH parents AS ( "+
+		"SELECT p.id, p.name, 'parent' AS relationship FROM person p "+
+		"JOIN relationships r ON p.id = r.related_person_id "+
+		"WHERE r.person_id = (SELECT id FROM person WHERE id = $1) AND r.relationship = 'parent' "+
+		"), grandparents AS ( "+
+		"SELECT p.id, p.name, 'grandparent' AS relationship FROM person p "+
+		"JOIN relationships r ON p.id = r.related_person_id "+
+		"WHERE r.person_id IN (SELECT id FROM parents) AND r.relationship = 'parent' "+
+		"), aunts_uncles AS ( "+
+		"SELECT p.id, p.name, 'aunt/uncle' AS relationship FROM person p "+
+		"JOIN relationships r ON p.id = r.related_person_id "+
+		"WHERE r.person_id IN (SELECT id FROM grandparents) AND r.relationship = 'children' AND p.id NOT in (SELECT id FROM parents) "+
+		"), siblings AS ( "+
+		"SELECT p.id, p.name, 'sibling' AS relationship FROM person p "+
+		"JOIN relationships r ON p.id = r.related_person_id "+
+		"WHERE r.person_id IN (SELECT id FROM parents) AND r.relationship = 'children' "+
+		"), nieces_nephews AS ( "+
+		"SELECT p.id, p.name, 'cousin' AS relationship FROM person p "+
+		"JOIN relationships r ON p.id = r.related_person_id "+
+		"WHERE r.person_id IN (SELECT id FROM siblings) AND r.relationship = 'children' "+
+		") "+
+		"SELECT * FROM parents "+
+		"UNION "+
+		"SELECT * FROM grandparents "+
+		"UNION "+
+		"SELECT * FROM aunts_uncles "+
+		"UNION "+
+		"SELECT * FROM siblings "+
+		"UNION "+
+		"SELECT * FROM nieces_nephews ", id)
 	if err != nil {
-		if err == sql.ErrNoRows {
-			return relationship, domain.ErrNotFound
-		}
-		return relationship, err
+		return nil, err
 	}
-	return relationship, nil
+	defer rows.Close()
+
+	for rows.Next() {
+		var parent domain.FamilyMember
+		err := rows.Scan(&parent.ID, &parent.Name, &parent.Relationship)
+		if err != nil {
+			return nil, err
+		}
+
+		if parent.ID == id {
+			familyMembers.ID = parent.ID
+			familyMembers.Name = parent.Name
+			continue
+		}
+
+		relationships = append(relationships, parent)
+	}
+
+	familyMembers.Members = relationships
+
+	return familyMembers, nil
 
 }
 
@@ -50,132 +92,62 @@ func (p *postgresPersonRepo) CreateRelationship(c *gin.Context, relationship dom
 	return nil
 }
 
-func (p *postgresPersonRepo) getFamilyTree(name string) ([]FamilyMember, error) {
-	var family []FamilyMember
-	var parents []Person
-	var grandparents []Person
-	var auntsUncles []Person
-	var siblings []Person
+func (p *postgresPersonRepo) getFamilyTree(name string) (*domain.FamilyMembers, error) {
+	var relationships []domain.FamilyMember
+	familyMembers := &domain.FamilyMembers{}
 
-	// Busca os pais
-	rows, err := p.DB.Query("SELECT p.id, p.name FROM person p JOIN relationships r ON p.id = r.related_person_id WHERE r.person_id = (SELECT id FROM person WHERE name = $1) AND r.relationship = 'parent'", name)
+	rows, err := p.DB.Query("WITH parents AS ( " +
+		"SELECT p.id, p.name, 'parent' AS relationship FROM person p " +
+		"JOIN relationships r ON p.id = r.related_person_id " +
+		"WHERE r.person_id = (SELECT id FROM person WHERE name = 'laysson') AND r.relationship = 'parent' " +
+		"), grandparents AS ( " +
+		"SELECT p.id, p.name, 'grandparent' AS relationship FROM person p " +
+		"JOIN relationships r ON p.id = r.related_person_id " +
+		"WHERE r.person_id IN (SELECT id FROM parents) AND r.relationship = 'parent' " +
+		"), aunts_uncles AS ( " +
+		"SELECT p.id, p.name, 'aunt/uncle' AS relationship FROM person p " +
+		"JOIN relationships r ON p.id = r.related_person_id " +
+		"WHERE r.person_id IN (SELECT id FROM grandparents) AND r.relationship = 'children' AND p.id NOT in (SELECT id FROM parents) " +
+		"), siblings AS ( " +
+		"SELECT p.id, p.name, 'sibling' AS relationship FROM person p " +
+		"JOIN relationships r ON p.id = r.related_person_id " +
+		"WHERE r.person_id IN (SELECT id FROM parents) AND r.relationship = 'children' " +
+		"), nieces_nephews AS ( " +
+		"SELECT p.id, p.name, 'cousin' AS relationship FROM person p " +
+		"JOIN relationships r ON p.id = r.related_person_id " +
+		"WHERE r.person_id IN (SELECT id FROM siblings) AND r.relationship = 'children' " +
+		") " +
+		"SELECT * FROM parents " +
+		"UNION " +
+		"SELECT * FROM grandparents " +
+		"UNION " +
+		"SELECT * FROM aunts_uncles " +
+		"UNION " +
+		"SELECT * FROM siblings " +
+		"UNION " +
+		"SELECT * FROM nieces_nephews ")
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
 
 	for rows.Next() {
-		var parent Person
-		err := rows.Scan(&parent.ID, &parent.Name)
+		var parent domain.FamilyMember
+		err := rows.Scan(&parent.ID, &parent.Name, &parent.Relationship)
 		if err != nil {
 			return nil, err
 		}
-		parents = append(parents, parent)
-	}
 
-	// Adiciona os pais na lista de parentes
-	for _, parent := range parents {
-		family = append(family, FamilyMember{
-			Person:       parent,
-			Relationship: "parent",
-		})
-	}
-
-	// Busca os avós
-	for _, parent := range parents {
-		rows, err := p.DB.Query("SELECT p.id, p.name FROM person p JOIN relationships r ON p.id = r.related_person_id WHERE r.person_id = $1 AND r.relationship = 'parent'", parent.ID)
-		if err != nil {
-			return nil, err
+		if parent.Name == name {
+			familyMembers.ID = parent.ID
+			familyMembers.Name = parent.Name
+			continue
 		}
-		defer rows.Close()
 
-		var grandparentsOfParent []Person
-		for rows.Next() {
-			var grandparent Person
-			err := rows.Scan(&grandparent.ID, &grandparent.Name)
-			if err != nil {
-				return nil, err
-			}
-			grandparentsOfParent = append(grandparentsOfParent, grandparent)
-		}
-		grandparents = append(grandparents, grandparentsOfParent...)
+		relationships = append(relationships, parent)
 	}
 
-	// Adiciona os avós na lista de parentes
-	for _, grandparent := range grandparents {
-		family = append(family, FamilyMember{
-			Person:       grandparent,
-			Relationship: "grandparent",
-		})
-	}
+	familyMembers.Members = relationships
 
-	// Busca os tios e tias
-	for _, grandparent := range grandparents {
-		rows, err := p.DB.Query("SELECT p.id, p.name FROM person p JOIN relationships r ON p.id = r.related_person_id WHERE r.person_id = $1 AND r.relationship = 'children'", grandparent.ID)
-		if err != nil {
-			return nil, err
-		}
-		defer rows.Close()
-
-		var auntsUnclesOfGrandparent []Person
-		for rows.Next() {
-			var auntsUncles Person
-			err := rows.Scan(&auntsUncles.ID, &auntsUncles.Name)
-			if err != nil {
-				return nil, err
-			}
-			auntsUnclesOfGrandparent = append(auntsUnclesOfGrandparent, auntsUncles)
-		}
-		auntsUncles = append(auntsUncles, auntsUnclesOfGrandparent...)
-	}
-
-	// Adiciona os tios e tias na lista de parentes
-	for _, auntUncle := range auntsUncles {
-		family = append(family, FamilyMember{
-			Person:       auntUncle,
-			Relationship: "aunt/uncle",
-		})
-	}
-
-	// Busca os irmãos
-	for _, parent := range parents {
-		rows, err := p.DB.Query("SELECT p.id, p.name FROM person p JOIN relationships r ON p.id = r.related_person_id WHERE r.person_id = $1 AND r.relationship = 'children'", parent.ID)
-		if err != nil {
-			return nil, err
-		}
-		defer rows.Close()
-
-		var siblingParents []Person
-		for rows.Next() {
-			var sibling Person
-			err := rows.Scan(&sibling.ID, &sibling.Name)
-			if err != nil {
-				return nil, err
-			}
-			siblingParents = append(siblingParents, sibling)
-		}
-		siblings = append(siblings, siblingParents...)
-	}
-
-	// Adiciona os irmãos na lista de parentes
-	for _, sibling := range siblings {
-		if sibling.Name != name { // para não incluir o individuo
-			family = append(family, FamilyMember{
-				Person:       sibling,
-				Relationship: "sibling",
-			})
-		}
-	}
-
-	return family, nil
-}
-
-type FamilyMember struct {
-	Person       Person
-	Relationship string
-}
-
-type Person struct {
-	ID   int
-	Name string
+	return familyMembers, nil
 }

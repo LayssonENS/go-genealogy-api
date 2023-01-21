@@ -20,11 +20,11 @@ func NewRelationshipHandler(routerGroup *gin.Engine, us domain.RelationshipUseCa
 }
 
 func (h *RelationshipHandler) GetRelationshipByID(c *gin.Context) {
-	idParam, _ := strconv.Atoi(c.Param("idPerson"))
-	//if err != nil {
-	//	c.JSON(http.StatusBadRequest, gin.H{"error": domain.ErrNotFound.Error()})
-	//	return
-	//}
+	idParam, err := strconv.Atoi(c.Param("idPerson"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid id"})
+		return
+	}
 	idParam = 1
 	relationshipId := int64(idParam)
 

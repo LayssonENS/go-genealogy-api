@@ -5,18 +5,30 @@ import (
 )
 
 type Relationship struct {
-	ID              int    `json:"id"`
-	PersonID        int    `json:"person_id"`
-	RelatedPersonID int    `json:"related_person_id"`
+	ID              int64  `json:"id"`
+	PersonID        int64  `json:"person_id"`
+	RelatedPersonID int64  `json:"related_person_id"`
 	Relationship    string `json:"relationship"`
 }
 
+type FamilyMember struct {
+	ID           int64  `json:"id"`
+	Name         string `json:"name"`
+	Relationship string `json:"relationship"`
+}
+
+type FamilyMembers struct {
+	ID      int64          `json:"id"`
+	Name    string         `json:"name"`
+	Members []FamilyMember `json:"members"`
+}
+
 type RelationshipUseCase interface {
-	GetRelationshipByID(c *gin.Context, id int64) (Relationship, error)
+	GetRelationshipByID(c *gin.Context, id int64) (*FamilyMembers, error)
 	CreateRelationship(c *gin.Context, person Relationship) error
 }
 
 type RelationshipRepository interface {
-	GetRelationshipByID(c *gin.Context, id int64) (Relationship, error)
+	GetRelationshipByID(c *gin.Context, id int64) (*FamilyMembers, error)
 	CreateRelationship(c *gin.Context, relationship Relationship) error
 }
