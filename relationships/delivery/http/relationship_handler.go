@@ -25,7 +25,6 @@ func (h *RelationshipHandler) GetRelationshipByID(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid id"})
 		return
 	}
-	idParam = 1
 	relationshipId := int64(idParam)
 
 	response, err := h.RUseCase.GetRelationshipByID(c, relationshipId)
