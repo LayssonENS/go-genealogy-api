@@ -16,6 +16,7 @@ func NewPersonHandler(routerGroup *gin.Engine, us domain.PersonUseCase) {
 		PUseCase: us,
 	}
 	routerGroup.GET("/person/:id", handler.GetByID)
+	routerGroup.GET("/person/all", handler.GetAllPerson)
 	routerGroup.POST("/person", handler.CreatePerson)
 }
 
@@ -28,7 +29,7 @@ func (h *PersonHandler) GetByID(c *gin.Context) {
 
 	personId := int64(idParam)
 
-	response, err := h.PUseCase.GetByID(c, personId)
+	response, err := h.PUseCase.GetByID(personId)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -44,11 +45,21 @@ func (h *PersonHandler) CreatePerson(c *gin.Context) {
 		return
 	}
 
-	err := h.PUseCase.CreatePerson(c, person)
+	err := h.PUseCase.CreatePerson(person)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
 	c.JSON(http.StatusCreated, gin.H{"msg": "Created"})
+}
+
+func (h *PersonHandler) GetAllPerson(c *gin.Context) {
+	response, err := h.PUseCase.GetAllPerson()
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, response)
 }

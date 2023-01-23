@@ -1,6 +1,8 @@
 CREATE TABLE person (
     id SERIAL PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
+    email VARCHAR(100) DEFAULT NULL,
+    date_of_birth VARCHAR(100) DEFAULT NULL,
     created_at TIMESTAMP DEFAULT NOW()
 );
 
