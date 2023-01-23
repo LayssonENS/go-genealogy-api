@@ -1,0 +1,180 @@
+definitions:
+  domain.FamilyMember:
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
+      relationship:
+        type: string
+    type: object
+  domain.FamilyMembers:
+    properties:
+      id:
+        type: integer
+      members:
+        items:
+          $ref: '#/definitions/domain.FamilyMember'
+        type: array
+      name:
+        type: string
+    type: object
+  domain.Person:
+    properties:
+      created_at:
+        type: string
+      date_of_birth:
+        type: string
+      email:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+    required:
+    - name
+    type: object
+  domain.Relationship:
+    properties:
+      children:
+        type: integer
+      parent:
+        type: integer
+      person_id:
+        type: integer
+    type: object
+info:
+  contact: {}
+paths:
+  /person:
+    post:
+      consumes:
+      - application/json
+      description: Create person
+      parameters:
+      - description: Payload
+        in: body
+        name: Payload
+        required: true
+        schema:
+          $ref: '#/definitions/domain.Person'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "422":
+          description: Unprocessable Entity
+          schema:
+            type: string
+      summary: Route to create person
+      tags:
+      - Person
+  /person/{personId}:
+    get:
+      consumes:
+      - application/json
+      description: Fetch person
+      parameters:
+      - description: Person ID
+        in: path
+        name: personId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.Person'
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+      summary: Route to fetch person by ID
+      tags:
+      - Person
+  /person/all:
+    get:
+      consumes:
+      - application/json
+      description: All people
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/domain.Person'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+      summary: Route to return all people
+      tags:
+      - Person
+  /relationships:
+    post:
+      consumes:
+      - application/json
+      description: Create relationships
+      parameters:
+      - description: Payload
+        in: body
+        name: Payload
+        required: true
+        schema:
+          $ref: '#/definitions/domain.Relationship'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "422":
+          description: Unprocessable Entity
+          schema:
+            type: string
+      summary: Route to create relationships
+      tags:
+      - Relationship
+  /relationships/{personId}:
+    get:
+      consumes:
+      - application/json
+      description: Get relationships
+      parameters:
+      - description: Person ID
+        in: path
+        name: personId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.FamilyMembers'
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+      summary: Route to Get relationships
+      tags:
+      - Relationship
+swagger: "2.0"

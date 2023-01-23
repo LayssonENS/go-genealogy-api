@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/LayssonENS/go-genealogy-api/config"
 	"github.com/LayssonENS/go-genealogy-api/database"
+	_ "github.com/LayssonENS/go-genealogy-api/docs"
 	personHttpDelivery "github.com/LayssonENS/go-genealogy-api/person/delivery/http"
 	personRepository "github.com/LayssonENS/go-genealogy-api/person/repository"
 	personUCase "github.com/LayssonENS/go-genealogy-api/person/usecase"
@@ -23,11 +24,18 @@ import (
 	"time"
 )
 
+// @title Go Genealogy API
+// @version 1.0
+// @description This is Genealogy API in Go.
+
+// @host 0.0.0.0:8000
+// @BasePath /auth
+// @schemes http
+// @query.collection.format multi
+
 func main() {
 	ctx := context.Background()
-
 	log := logrus.New()
-	//log.SetFormatter(&logrus.JSONFormatter{})
 
 	dbInstance, err := database.NewPostgresConnection(config.GetEnv().DbConfig)
 	if err != nil {

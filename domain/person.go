@@ -5,7 +5,7 @@ import (
 )
 
 type Person struct {
-	ID          int64      `json:"id"`
+	ID          int64      `json:"id" swagger:"ignore"`
 	Name        string     `json:"name" binding:"required"`
 	Email       string     `json:"email"`
 	DateOfBirth *time.Time `json:"date_of_birth" time_format:"2006-01-02"`
