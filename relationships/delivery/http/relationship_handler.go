@@ -16,7 +16,7 @@ func NewRelationshipHandler(routerGroup *gin.Engine, us domain.RelationshipUseCa
 		RUseCase: us,
 	}
 	routerGroup.GET("/relationships/:idPerson", handler.GetRelationshipByID)
-	routerGroup.POST("/relationship", handler.CreateRelationship)
+	routerGroup.POST("/relationships", handler.CreateRelationship)
 }
 
 func (h *RelationshipHandler) GetRelationshipByID(c *gin.Context) {

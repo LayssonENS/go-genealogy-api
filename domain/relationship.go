@@ -5,10 +5,9 @@ import (
 )
 
 type Relationship struct {
-	ID              int64  `json:"id"`
-	PersonID        int64  `json:"person_id"`
-	RelatedPersonID int64  `json:"related_person_id"`
-	Relationship    string `json:"relationship"`
+	PersonID   int64 `json:"person_id"`
+	ParentId   int64 `json:"parent"`
+	ChildrenId int64 `json:"children"`
 }
 
 type FamilyMember struct {
