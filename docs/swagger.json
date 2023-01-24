@@ -1,7 +1,10 @@
 {
     "swagger": "2.0",
     "info": {
-        "contact": {}
+        "description": "This is Genealogy API in Go.",
+        "title": "Go Genealogy API",
+        "contact": {},
+        "version": "1.0"
     },
     "paths": {
         "/person": {
@@ -214,6 +217,9 @@
         "domain.FamilyMember": {
             "type": "object",
             "properties": {
+                "family_connection": {
+                    "type": "integer"
+                },
                 "id": {
                     "type": "integer"
                 },
@@ -245,10 +251,10 @@
         "domain.Person": {
             "type": "object",
             "properties": {
-                "created_at": {
+                "birth_date": {
                     "type": "string"
                 },
-                "date_of_birth": {
+                "created_at": {
                     "type": "string"
                 },
                 "email": {
@@ -268,7 +274,7 @@
                 "name"
             ],
             "properties": {
-                "date_of_birth": {
+                "birth_date": {
                     "type": "string"
                 },
                 "email": {

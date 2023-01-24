@@ -226,6 +226,9 @@ const docTemplate = `{
         "domain.FamilyMember": {
             "type": "object",
             "properties": {
+                "family_connection": {
+                    "type": "integer"
+                },
                 "id": {
                     "type": "integer"
                 },
@@ -257,10 +260,10 @@ const docTemplate = `{
         "domain.Person": {
             "type": "object",
             "properties": {
-                "created_at": {
+                "birth_date": {
                     "type": "string"
                 },
-                "date_of_birth": {
+                "created_at": {
                     "type": "string"
                 },
                 "email": {
@@ -280,7 +283,7 @@ const docTemplate = `{
                 "name"
             ],
             "properties": {
-                "date_of_birth": {
+                "birth_date": {
                     "type": "string"
                 },
                 "email": {

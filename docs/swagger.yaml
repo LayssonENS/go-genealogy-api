@@ -1,6 +1,8 @@
 definitions:
   domain.FamilyMember:
     properties:
+      family_connection:
+        type: integer
       id:
         type: integer
       name:
@@ -21,9 +23,9 @@ definitions:
     type: object
   domain.Person:
     properties:
-      created_at:
+      birth_date:
         type: string
-      date_of_birth:
+      created_at:
         type: string
       email:
         type: string
@@ -34,7 +36,7 @@ definitions:
     type: object
   domain.PersonRequest:
     properties:
-      date_of_birth:
+      birth_date:
         type: string
       email:
         type: string
