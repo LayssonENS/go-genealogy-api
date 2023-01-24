@@ -19,11 +19,12 @@ func NewPostgresConnection(dbConfig config.DbConfig) (*sql.DB, error) {
 		dbConfig.Port,
 		dbConfig.Name,
 	)
-	fmt.Println(dbConfig.Name, dbConfig.User, dbConfig.Password, dbConfig.Host)
+
 	db, err := sql.Open("postgres", dataSourceName)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to open postgres connection")
 	}
+
 	return db, nil
 }
 
