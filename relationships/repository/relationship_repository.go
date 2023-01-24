@@ -42,7 +42,7 @@ func (p *postgresPersonRepo) GetRelationshipByID(personId int64) (*domain.Family
 					JOIN relationships r ON p.id = r.related_person_id
 					WHERE r.person_id IN (SELECT id FROM parents where relationship != 'children') AND r.relationship = 'parent' AND p.id NOT in (SELECT id FROM parents)
 				), aunts_uncles AS (
-					SELECT p.id, p.name, 'aunt/uncle' AS relationship FROM person p
+					SELECT p.id, p.name, 'aunt_uncle' AS relationship FROM person p
 					JOIN relationships r ON p.id = r.related_person_id
 					WHERE r.person_id IN (SELECT id FROM grandparents) AND r.relationship = 'children' AND p.id NOT in (SELECT id FROM parents)
 				), cousin AS (
@@ -68,6 +68,8 @@ func (p *postgresPersonRepo) GetRelationshipByID(personId int64) (*domain.Family
 				SELECT * FROM grandparents
 				UNION
 				SELECT * FROM aunts_uncles
+				UNION
+				SELECT * FROM cousin
 				UNION
 				SELECT * FROM siblings
 				UNION
@@ -97,6 +99,10 @@ func (p *postgresPersonRepo) GetRelationshipByID(personId int64) (*domain.Family
 		relationships = append(relationships, parent)
 	}
 
+	if len(relationships) == 0 {
+		return nil, domain.ErrRelationNotFound
+	}
+
 	familyMembers.Members = relationships
 
 	return familyMembers, nil
@@ -105,6 +111,10 @@ func (p *postgresPersonRepo) GetRelationshipByID(personId int64) (*domain.Family
 
 func (p *postgresPersonRepo) CreateRelationship(personId int64, relationship domain.Relationship) error {
 
+	if personId == relationship.ChildrenId || personId == relationship.ParentId {
+		return domain.ErrInvalidSelfRelation
+	}
+
 	prepareQuery, err := p.DB.Prepare("INSERT INTO relationships (person_id, related_person_id, relationship) VALUES($1, $2, $3)")
 	if err != nil {
 		return err
@@ -112,12 +122,39 @@ func (p *postgresPersonRepo) CreateRelationship(personId int64, relationship dom
 	defer prepareQuery.Close()
 
 	if relationship.ChildrenId != 0 {
+		family, err := p.GetRelationshipByID(relationship.ChildrenId)
+		if err != nil && err != domain.ErrRelationNotFound {
+			return err
+		}
+
+		if family != nil {
+			for _, familyMember := range family.Members {
+				if familyMember.ID == personId && familyMember.Relationship == "parent" {
+					return domain.ErrDuplicateRelation
+				}
+			}
+		}
+
 		_, err = prepareQuery.Exec(personId, relationship.ChildrenId, "children")
 		if err != nil {
 			return err
 		}
 	}
+
 	if relationship.ParentId != 0 {
+		family, err := p.GetRelationshipByID(relationship.ParentId)
+		if err != nil && err != domain.ErrRelationNotFound {
+			return err
+		}
+
+		if len(family.Members) > 0 {
+			for _, familyMember := range family.Members {
+				if familyMember.ID == personId && familyMember.Relationship == "children" {
+					return domain.ErrDuplicateRelation
+				}
+			}
+		}
+
 		_, err = prepareQuery.Exec(personId, relationship.ParentId, "parent")
 		if err != nil {
 			return err

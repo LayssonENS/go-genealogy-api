@@ -26,7 +26,7 @@ func (p *postgresPersonRepo) GetByID(id int64) (domain.Person, error) {
 		&person.ID, &person.Name, &person.Email, &person.BirthDate, &person.CreatedAt)
 	if err != nil {
 		if err == sql.ErrNoRows {
-			return person, domain.ErrNotFound
+			return person, domain.ErrRegistrationNotFound
 		}
 		return person, err
 	}
@@ -73,7 +73,7 @@ func (p *postgresPersonRepo) GetAllPerson() ([]domain.Person, error) {
 	}
 
 	if len(people) == 0 {
-		return nil, domain.ErrNotFound
+		return nil, domain.ErrRegistrationNotFound
 	}
 
 	return people, nil
