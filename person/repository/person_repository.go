@@ -3,7 +3,10 @@ package personRepository
 import (
 	"database/sql"
 	"github.com/LayssonENS/go-genealogy-api/domain"
+	"time"
 )
+
+const dateLayout = "2006-01-02"
 
 type postgresPersonRepo struct {
 	DB *sql.DB
@@ -19,8 +22,8 @@ func NewPostgresPersonRepository(db *sql.DB) domain.PersonRepository {
 func (p *postgresPersonRepo) GetByID(id int64) (domain.Person, error) {
 	var person domain.Person
 	err := p.DB.QueryRow(
-		"SELECT id, name, email, date_of_birth, created_at FROM person WHERE id = $1", id).Scan(
-		&person.ID, &person.Name, &person.Email, &person.DateOfBirth, &person.CreatedAt)
+		"SELECT id, name, email, birth_date, created_at FROM person WHERE id = $1", id).Scan(
+		&person.ID, &person.Name, &person.Email, &person.BirthDate, &person.CreatedAt)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return person, domain.ErrNotFound
@@ -32,8 +35,11 @@ func (p *postgresPersonRepo) GetByID(id int64) (domain.Person, error) {
 }
 
 func (p *postgresPersonRepo) CreatePerson(person domain.PersonRequest) error {
-	query := `INSERT INTO person (name, email, date_of_birth) VALUES ($1, $2, $3) `
-	_, err := p.DB.Exec(query, person.Name, person.Email, person.DateOfBirth)
+	date, _ := time.Parse(dateLayout, person.BirthDate)
+	birthDate := date
+
+	query := `INSERT INTO person (name, email, birth_date) VALUES ($1, $2, $3) `
+	_, err := p.DB.Exec(query, person.Name, person.Email, birthDate)
 	if err != nil {
 		return err
 	}
@@ -44,7 +50,7 @@ func (p *postgresPersonRepo) CreatePerson(person domain.PersonRequest) error {
 func (p *postgresPersonRepo) GetAllPerson() ([]domain.Person, error) {
 	var people []domain.Person
 
-	rows, err := p.DB.Query("SELECT id, name, email, date_of_birth, created_at FROM person")
+	rows, err := p.DB.Query("SELECT id, name, email, birth_date, created_at FROM person")
 	if err != nil {
 		return nil, err
 	}
@@ -56,7 +62,7 @@ func (p *postgresPersonRepo) GetAllPerson() ([]domain.Person, error) {
 			&person.ID,
 			&person.Name,
 			&person.Email,
-			&person.DateOfBirth,
+			&person.BirthDate,
 			&person.CreatedAt,
 		)
 		if err != nil {

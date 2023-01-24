@@ -5,17 +5,17 @@ import (
 )
 
 type PersonRequest struct {
-	Name        string     `json:"name" binding:"required"`
-	Email       string     `json:"email"`
-	DateOfBirth *time.Time `json:"date_of_birth" time_format:"2006-01-02"`
+	Name      string `json:"name" binding:"required"`
+	Email     string `json:"email"`
+	BirthDate string `json:"birth_date"`
 }
 
 type Person struct {
-	ID          int64      `json:"id"`
-	Name        string     `json:"name"`
-	Email       string     `json:"email"`
-	DateOfBirth *time.Time `json:"date_of_birth" time_format:"2006-01-02"`
-	CreatedAt   time.Time  `json:"created_at"`
+	ID        int64      `json:"id"`
+	Name      string     `json:"name"`
+	Email     string     `json:"email"`
+	BirthDate *time.Time `json:"birth_date"`
+	CreatedAt time.Time  `json:"created_at"`
 }
 
 type PersonUseCase interface {
