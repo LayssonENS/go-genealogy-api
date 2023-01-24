@@ -28,12 +28,12 @@ func NewPersonHandler(routerGroup *gin.Engine, us domain.PersonUseCase) {
 // @Produce  json
 // @Param personId path int true "Person ID"
 // @Success 200 {object} domain.Person
-// @Failure 400 {object} string
+// @Failure 400 {object} domain.ErrorResponse
 // @Router /person/{personId} [GET]
 func (h *PersonHandler) GetByID(c *gin.Context) {
 	idParam, err := strconv.Atoi(c.Param("personId"))
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": domain.ErrNotFound.Error()})
+		c.JSON(http.StatusBadRequest, domain.ErrorResponse{ErrorMessage: err.Error()})
 		return
 	}
 
@@ -55,12 +55,12 @@ func (h *PersonHandler) GetByID(c *gin.Context) {
 // @Accept  json
 // @Produce  json
 // @Success 200 {object} []domain.Person
-// @Failure 400 {object} string
+// @Failure 400 {object} domain.ErrorResponse
 // @Router /person/all [GET]
 func (h *PersonHandler) GetAllPerson(c *gin.Context) {
 	response, err := h.PUseCase.GetAllPerson()
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, domain.ErrorResponse{ErrorMessage: err.Error()})
 		return
 	}
 
@@ -75,19 +75,19 @@ func (h *PersonHandler) GetAllPerson(c *gin.Context) {
 // @Produce  json
 // @Param Payload body domain.PersonRequest true "Payload"
 // @Success 201 {object} string
-// @Failure 400 {object} string
-// @Failure 422 {object} string
+// @Failure 400 {object} domain.ErrorResponse
+// @Failure 422 {object} domain.ErrorResponse
 // @Router /person [POST]
 func (h *PersonHandler) CreatePerson(c *gin.Context) {
 	var person domain.PersonRequest
 	if err := c.ShouldBindJSON(&person); err != nil {
-		c.JSON(http.StatusUnprocessableEntity, gin.H{"error": err.Error()})
+		c.JSON(http.StatusUnprocessableEntity, domain.ErrorResponse{ErrorMessage: err.Error()})
 		return
 	}
 
 	err := h.PUseCase.CreatePerson(person)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, domain.ErrorResponse{ErrorMessage: err.Error()})
 		return
 	}
 

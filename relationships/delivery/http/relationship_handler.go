@@ -27,7 +27,7 @@ func NewRelationshipHandler(routerGroup *gin.Engine, us domain.RelationshipUseCa
 // @Produce  json
 // @Param personId path int true "Person ID"
 // @Success 200 {object} domain.FamilyMembers
-// @Failure 400 {object} string
+// @Failure 400	{object} domain.ErrorResponse
 // @Router /relationships/{personId} [GET]
 func (h *RelationshipHandler) GetRelationshipByID(c *gin.Context) {
 	idParam, err := strconv.Atoi(c.Param("personId"))
@@ -39,7 +39,7 @@ func (h *RelationshipHandler) GetRelationshipByID(c *gin.Context) {
 
 	response, err := h.RUseCase.GetRelationshipByID(relationshipId)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, domain.ErrorResponse{ErrorMessage: err.Error()})
 		return
 	}
 
@@ -55,20 +55,20 @@ func (h *RelationshipHandler) GetRelationshipByID(c *gin.Context) {
 // @Param personId path int true "Person ID"
 // @Param Payload body domain.Relationship true "Payload"
 // @Success 201 {object} string
-// @Failure 400 {object} string
-// @Failure 422 {object} string
+// @Failure 400 {object} domain.ErrorResponse
+// @Failure 422 {object} domain.ErrorResponse
 // @Router /relationships/{personId} [POST]
 func (h *RelationshipHandler) CreateRelationship(c *gin.Context) {
 	idParam, err := strconv.Atoi(c.Param("personId"))
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid id"})
+		c.JSON(http.StatusBadRequest, domain.ErrorResponse{ErrorMessage: err.Error()})
 		return
 	}
 	relationshipId := int64(idParam)
 
 	var relationship domain.Relationship
 	if err := c.ShouldBindJSON(&relationship); err != nil {
-		c.JSON(http.StatusUnprocessableEntity, gin.H{"error": err.Error()})
+		c.JSON(http.StatusUnprocessableEntity, domain.ErrorResponse{ErrorMessage: err.Error()})
 		return
 	}
 

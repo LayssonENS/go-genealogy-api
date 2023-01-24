@@ -1,4 +1,9 @@
 definitions:
+  domain.ErrorResponse:
+    properties:
+      error:
+        type: string
+    type: object
   domain.FamilyMember:
     properties:
       family_connection:
@@ -77,11 +82,11 @@ paths:
         "400":
           description: Bad Request
           schema:
-            type: string
+            $ref: '#/definitions/domain.ErrorResponse'
         "422":
           description: Unprocessable Entity
           schema:
-            type: string
+            $ref: '#/definitions/domain.ErrorResponse'
       summary: Route to create person
       tags:
       - Person
@@ -106,7 +111,7 @@ paths:
         "400":
           description: Bad Request
           schema:
-            type: string
+            $ref: '#/definitions/domain.ErrorResponse'
       summary: Route to fetch person by ID
       tags:
       - Person
@@ -127,7 +132,7 @@ paths:
         "400":
           description: Bad Request
           schema:
-            type: string
+            $ref: '#/definitions/domain.ErrorResponse'
       summary: Route to return all people
       tags:
       - Person
@@ -152,7 +157,7 @@ paths:
         "400":
           description: Bad Request
           schema:
-            type: string
+            $ref: '#/definitions/domain.ErrorResponse'
       summary: Route to Get relationships
       tags:
       - Relationship
@@ -182,11 +187,11 @@ paths:
         "400":
           description: Bad Request
           schema:
-            type: string
+            $ref: '#/definitions/domain.ErrorResponse'
         "422":
           description: Unprocessable Entity
           schema:
-            type: string
+            $ref: '#/definitions/domain.ErrorResponse'
       summary: Route to create relationships
       tags:
       - Relationship
