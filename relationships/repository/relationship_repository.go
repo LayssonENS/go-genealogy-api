@@ -87,6 +87,7 @@ func (p *postgresPersonRepo) GetRelationshipByID(personId int64) (*domain.Family
 			return nil, err
 		}
 
+		parent.FamilyConnection = domain.FamilyConnection[parent.Relationship]
 		if parent.ID == personId {
 			familyMembers.ID = parent.ID
 			familyMembers.Name = parent.Name
