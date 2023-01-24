@@ -1,24 +1,32 @@
-version: "3.7"
+version: '3.8'
+
 services:
   web:
-    image: go-genealogy-api
-    container_name: genealogy_api
-    ports:
-      - 9090:9090
+    build: .
     environment:
-      - DB_HOST=localhost
+      - ENVIRONMENT=dev
+      - DEBUG=true
+      - PORT=8080
+      - DB_HOST=db
+      - DB_PORT=5432
       - DB_USER=postgres
-      - DB_PASSWORD=
-    depends_on:
-      - database
-    restart: always
-
-  database:
-    image: postgres
-    container_name: database
+      - DB_PASSWORD=postgres
+      - DB_NAME=postgres
+    ports:
+      - "9000:9000"
+    volumes:
+      - .:/usr/src/app
+    command: air ./main.go -b 0.0.0.0
+  db:
+    image: postgres:alpine
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=postgres
     ports:
       - "5432:5432"
-    environment:
-      POSTGRES_DATABASE: "person"
-      POSTGRES_USER: "postgres"
-      POSTGRES_PASSWORD: "postgres"
+    volumes:
+      - postgres-db:/var/lib/postgresql/data
+
+volumes:
+  postgres-db:
