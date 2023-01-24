@@ -1,11 +1,6 @@
 package domain
 
-import (
-	"github.com/gin-gonic/gin"
-)
-
 type Relationship struct {
-	PersonID   int64 `json:"person_id"`
 	ParentId   int64 `json:"parent"`
 	ChildrenId int64 `json:"children"`
 }
@@ -23,11 +18,11 @@ type FamilyMembers struct {
 }
 
 type RelationshipUseCase interface {
-	GetRelationshipByID(c *gin.Context, id int64) (*FamilyMembers, error)
-	CreateRelationship(c *gin.Context, person Relationship) error
+	GetRelationshipByID(personId int64) (*FamilyMembers, error)
+	CreateRelationship(personId int64, person Relationship) error
 }
 
 type RelationshipRepository interface {
-	GetRelationshipByID(c *gin.Context, id int64) (*FamilyMembers, error)
-	CreateRelationship(c *gin.Context, relationship Relationship) error
+	GetRelationshipByID(personId int64) (*FamilyMembers, error)
+	CreateRelationship(personId int64, relationship Relationship) error
 }

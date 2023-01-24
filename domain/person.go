@@ -4,9 +4,15 @@ import (
 	"time"
 )
 
-type Person struct {
-	ID          int64      `json:"id" swagger:"ignore"`
+type PersonRequest struct {
 	Name        string     `json:"name" binding:"required"`
+	Email       string     `json:"email"`
+	DateOfBirth *time.Time `json:"date_of_birth" time_format:"2006-01-02"`
+}
+
+type Person struct {
+	ID          int64      `json:"id"`
+	Name        string     `json:"name"`
 	Email       string     `json:"email"`
 	DateOfBirth *time.Time `json:"date_of_birth" time_format:"2006-01-02"`
 	CreatedAt   time.Time  `json:"created_at"`
@@ -14,12 +20,12 @@ type Person struct {
 
 type PersonUseCase interface {
 	GetByID(id int64) (Person, error)
-	CreatePerson(person Person) error
+	CreatePerson(person PersonRequest) error
 	GetAllPerson() ([]Person, error)
 }
 
 type PersonRepository interface {
 	GetByID(id int64) (Person, error)
-	CreatePerson(person Person) error
+	CreatePerson(person PersonRequest) error
 	GetAllPerson() ([]Person, error)
 }

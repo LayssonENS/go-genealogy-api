@@ -23,7 +23,7 @@ func (a *personUseCase) GetByID(id int64) (domain.Person, error) {
 	return person, nil
 }
 
-func (a *personUseCase) CreatePerson(person domain.Person) error {
+func (a *personUseCase) CreatePerson(person domain.PersonRequest) error {
 	err := a.personRepository.CreatePerson(person)
 	if err != nil {
 		return err

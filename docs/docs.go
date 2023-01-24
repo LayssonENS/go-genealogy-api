@@ -36,7 +36,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/domain.Person"
+                            "$ref": "#/definitions/domain.PersonRequest"
                         }
                     }
                 ],
@@ -132,52 +132,6 @@ const docTemplate = `{
                 }
             }
         },
-        "/relationships": {
-            "post": {
-                "description": "Create relationships",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Relationship"
-                ],
-                "summary": "Route to create relationships",
-                "parameters": [
-                    {
-                        "description": "Payload",
-                        "name": "Payload",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/domain.Relationship"
-                        }
-                    }
-                ],
-                "responses": {
-                    "201": {
-                        "description": "Created",
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    "422": {
-                        "description": "Unprocessable Entity",
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                }
-            }
-        },
         "/relationships/{personId}": {
             "get": {
                 "description": "Get relationships",
@@ -209,6 +163,57 @@ const docTemplate = `{
                     },
                     "400": {
                         "description": "Bad Request",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Create relationships",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Relationship"
+                ],
+                "summary": "Route to create relationships",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Person ID",
+                        "name": "personId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Payload",
+                        "name": "Payload",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/domain.Relationship"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocessable Entity",
                         "schema": {
                             "type": "string"
                         }
@@ -251,9 +256,6 @@ const docTemplate = `{
         },
         "domain.Person": {
             "type": "object",
-            "required": [
-                "name"
-            ],
             "properties": {
                 "created_at": {
                     "type": "string"
@@ -272,6 +274,23 @@ const docTemplate = `{
                 }
             }
         },
+        "domain.PersonRequest": {
+            "type": "object",
+            "required": [
+                "name"
+            ],
+            "properties": {
+                "date_of_birth": {
+                    "type": "string"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
         "domain.Relationship": {
             "type": "object",
             "properties": {
@@ -279,9 +298,6 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "parent": {
-                    "type": "integer"
-                },
-                "person_id": {
                     "type": "integer"
                 }
             }

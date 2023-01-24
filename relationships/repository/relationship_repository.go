@@ -3,7 +3,6 @@ package repository
 import (
 	"database/sql"
 	"github.com/LayssonENS/go-genealogy-api/domain"
-	"github.com/gin-gonic/gin"
 )
 
 type postgresPersonRepo struct {
@@ -17,7 +16,7 @@ func NewPostgresRelationshipRepository(db *sql.DB) domain.RelationshipRepository
 	}
 }
 
-func (p *postgresPersonRepo) GetRelationshipByID(c *gin.Context, id int64) (*domain.FamilyMembers, error) {
+func (p *postgresPersonRepo) GetRelationshipByID(personId int64) (*domain.FamilyMembers, error) {
 	var relationships []domain.FamilyMember
 	familyMembers := &domain.FamilyMembers{}
 	query := `WITH parents AS (
@@ -65,7 +64,7 @@ func (p *postgresPersonRepo) GetRelationshipByID(c *gin.Context, id int64) (*dom
 			UNION
 			SELECT * FROM nieces_nephews
 			`
-	rows, err := p.DB.Query(query, id)
+	rows, err := p.DB.Query(query, personId)
 	if err != nil {
 		return nil, err
 	}
@@ -78,7 +77,7 @@ func (p *postgresPersonRepo) GetRelationshipByID(c *gin.Context, id int64) (*dom
 			return nil, err
 		}
 
-		if parent.ID == id {
+		if parent.ID == personId {
 			familyMembers.ID = parent.ID
 			familyMembers.Name = parent.Name
 			continue
@@ -93,7 +92,7 @@ func (p *postgresPersonRepo) GetRelationshipByID(c *gin.Context, id int64) (*dom
 
 }
 
-func (p *postgresPersonRepo) CreateRelationship(c *gin.Context, relationship domain.Relationship) error {
+func (p *postgresPersonRepo) CreateRelationship(personId int64, relationship domain.Relationship) error {
 
 	prepareQuery, err := p.DB.Prepare("INSERT INTO relationships (person_id, related_person_id, relationship) VALUES($1, $2, $3)")
 	if err != nil {
@@ -102,13 +101,13 @@ func (p *postgresPersonRepo) CreateRelationship(c *gin.Context, relationship dom
 	defer prepareQuery.Close()
 
 	if relationship.ChildrenId != 0 {
-		_, err = prepareQuery.Exec(relationship.PersonID, relationship.ChildrenId, "children")
+		_, err = prepareQuery.Exec(personId, relationship.ChildrenId, "children")
 		if err != nil {
 			return err
 		}
 	}
 	if relationship.ParentId != 0 {
-		_, err = prepareQuery.Exec(relationship.PersonID, relationship.ParentId, "parent")
+		_, err = prepareQuery.Exec(personId, relationship.ParentId, "parent")
 		if err != nil {
 			return err
 		}

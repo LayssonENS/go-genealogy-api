@@ -16,7 +16,7 @@ func NewRelationshipHandler(routerGroup *gin.Engine, us domain.RelationshipUseCa
 		RUseCase: us,
 	}
 	routerGroup.GET("/relationships/:personId", handler.GetRelationshipByID)
-	routerGroup.POST("/relationships", handler.CreateRelationship)
+	routerGroup.POST("/relationships/:personId", handler.CreateRelationship)
 }
 
 // GetRelationshipByID godoc
@@ -37,7 +37,7 @@ func (h *RelationshipHandler) GetRelationshipByID(c *gin.Context) {
 	}
 	relationshipId := int64(idParam)
 
-	response, err := h.RUseCase.GetRelationshipByID(c, relationshipId)
+	response, err := h.RUseCase.GetRelationshipByID(relationshipId)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -52,19 +52,27 @@ func (h *RelationshipHandler) GetRelationshipByID(c *gin.Context) {
 // @Tags Relationship
 // @Accept  json
 // @Produce  json
+// @Param personId path int true "Person ID"
 // @Param Payload body domain.Relationship true "Payload"
 // @Success 201 {object} string
 // @Failure 400 {object} string
 // @Failure 422 {object} string
-// @Router /relationships [POST]
+// @Router /relationships/{personId} [POST]
 func (h *RelationshipHandler) CreateRelationship(c *gin.Context) {
+	idParam, err := strconv.Atoi(c.Param("personId"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid id"})
+		return
+	}
+	relationshipId := int64(idParam)
+
 	var relationship domain.Relationship
 	if err := c.ShouldBindJSON(&relationship); err != nil {
 		c.JSON(http.StatusUnprocessableEntity, gin.H{"error": err.Error()})
 		return
 	}
 
-	err := h.RUseCase.CreateRelationship(c, relationship)
+	err = h.RUseCase.CreateRelationship(relationshipId, relationship)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return

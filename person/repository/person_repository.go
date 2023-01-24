@@ -31,7 +31,7 @@ func (p *postgresPersonRepo) GetByID(id int64) (domain.Person, error) {
 
 }
 
-func (p *postgresPersonRepo) CreatePerson(person domain.Person) error {
+func (p *postgresPersonRepo) CreatePerson(person domain.PersonRequest) error {
 	query := `INSERT INTO person (name, email, date_of_birth) VALUES ($1, $2, $3) `
 	_, err := p.DB.Exec(query, person.Name, person.Email, person.DateOfBirth)
 	if err != nil {

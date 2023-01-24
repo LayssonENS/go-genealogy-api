@@ -73,13 +73,13 @@ func (h *PersonHandler) GetAllPerson(c *gin.Context) {
 // @Tags Person
 // @Accept  json
 // @Produce  json
-// @Param Payload body domain.Person true "Payload"
+// @Param Payload body domain.PersonRequest true "Payload"
 // @Success 201 {object} string
 // @Failure 400 {object} string
 // @Failure 422 {object} string
 // @Router /person [POST]
 func (h *PersonHandler) CreatePerson(c *gin.Context) {
-	var person domain.Person
+	var person domain.PersonRequest
 	if err := c.ShouldBindJSON(&person); err != nil {
 		c.JSON(http.StatusUnprocessableEntity, gin.H{"error": err.Error()})
 		return

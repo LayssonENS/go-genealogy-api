@@ -2,7 +2,6 @@ package usecase
 
 import (
 	"github.com/LayssonENS/go-genealogy-api/domain"
-	"github.com/gin-gonic/gin"
 )
 
 type relationshipUseCase struct {
@@ -15,8 +14,8 @@ func NewRelationshipUseCase(relationshipRepository domain.RelationshipRepository
 	}
 }
 
-func (a *relationshipUseCase) GetRelationshipByID(c *gin.Context, id int64) (*domain.FamilyMembers, error) {
-	person, err := a.relationshipRepository.GetRelationshipByID(c, id)
+func (a *relationshipUseCase) GetRelationshipByID(personId int64) (*domain.FamilyMembers, error) {
+	person, err := a.relationshipRepository.GetRelationshipByID(personId)
 	if err != nil {
 		return person, err
 	}
@@ -24,8 +23,8 @@ func (a *relationshipUseCase) GetRelationshipByID(c *gin.Context, id int64) (*do
 	return person, nil
 }
 
-func (a *relationshipUseCase) CreateRelationship(c *gin.Context, relationship domain.Relationship) error {
-	err := a.relationshipRepository.CreateRelationship(c, relationship)
+func (a *relationshipUseCase) CreateRelationship(personId int64, relationship domain.Relationship) error {
+	err := a.relationshipRepository.CreateRelationship(personId, relationship)
 	if err != nil {
 		return err
 	}
