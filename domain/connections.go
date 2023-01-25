@@ -1,5 +1,10 @@
 package domain
 
+const (
+	ChildrenName = "children"
+	ParentName   = "parent"
+)
+
 var FamilyConnection = map[string]int64{
 	"self":         0,
 	"parent":       1,

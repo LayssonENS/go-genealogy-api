@@ -143,7 +143,7 @@ func (p *postgresPersonRepo) CreateRelationship(personId int64, relationship dom
 
 		if family != nil {
 			for _, familyMember := range family.Members {
-				if familyMember.ID == personId && familyMember.Relationship == "parent" {
+				if familyMember.ID == personId && familyMember.Relationship == domain.ParentName {
 					return domain.ErrDuplicateRelation
 				} else if familyMember.ID == personId {
 					return domain.ErrIncestuousRelation
@@ -151,7 +151,7 @@ func (p *postgresPersonRepo) CreateRelationship(personId int64, relationship dom
 			}
 		}
 
-		_, err = prepareQuery.Exec(personId, relationship.ChildrenId, "children")
+		_, err = prepareQuery.Exec(personId, relationship.ChildrenId, domain.ChildrenName)
 		if err != nil {
 			return err
 		}
@@ -165,7 +165,7 @@ func (p *postgresPersonRepo) CreateRelationship(personId int64, relationship dom
 
 		if family != nil {
 			for _, familyMember := range family.Members {
-				if familyMember.ID == personId && familyMember.Relationship == "children" {
+				if familyMember.ID == personId && familyMember.Relationship == domain.ChildrenName {
 					return domain.ErrDuplicateRelation
 				} else if familyMember.ID == personId {
 					return domain.ErrIncestuousRelation
