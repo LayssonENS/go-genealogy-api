@@ -16,10 +16,9 @@ func NewPersonHandler(routerGroup *gin.Engine, us domain.PersonUseCase) {
 		PUseCase: us,
 	}
 
-	v1 := routerGroup.Group("/v1")
-	v1.GET("/person/:personId", handler.GetByID)
-	v1.GET("/person/all", handler.GetAllPerson)
-	v1.POST("/person", handler.CreatePerson)
+	routerGroup.GET("/v1/person/:personId", handler.GetByID)
+	routerGroup.GET("/v1/person/all", handler.GetAllPerson)
+	routerGroup.POST("/v1/person", handler.CreatePerson)
 }
 
 // GetByID godoc
@@ -31,7 +30,7 @@ func NewPersonHandler(routerGroup *gin.Engine, us domain.PersonUseCase) {
 // @Param personId path int true "Person ID"
 // @Success 200 {object} domain.Person
 // @Failure 400 {object} domain.ErrorResponse
-// @Router /person/{personId} [GET]
+// @Router /v1/person/{personId} [GET]
 func (h *PersonHandler) GetByID(c *gin.Context) {
 	idParam, err := strconv.Atoi(c.Param("personId"))
 	if err != nil {
@@ -58,7 +57,7 @@ func (h *PersonHandler) GetByID(c *gin.Context) {
 // @Produce  json
 // @Success 200 {object} []domain.Person
 // @Failure 400 {object} domain.ErrorResponse
-// @Router /person/all [GET]
+// @Router /v1/person/all [GET]
 func (h *PersonHandler) GetAllPerson(c *gin.Context) {
 	response, err := h.PUseCase.GetAllPerson()
 	if err != nil {
@@ -79,7 +78,7 @@ func (h *PersonHandler) GetAllPerson(c *gin.Context) {
 // @Success 201 {object} string
 // @Failure 400 {object} domain.ErrorResponse
 // @Failure 422 {object} domain.ErrorResponse
-// @Router /person [POST]
+// @Router /v1/person [POST]
 func (h *PersonHandler) CreatePerson(c *gin.Context) {
 	var person domain.PersonRequest
 	if err := c.ShouldBindJSON(&person); err != nil {

@@ -10,6 +10,7 @@ import (
 	"github.com/pkg/errors"
 )
 
+// NewPostgresConnection : Create a new connection to a Postgres database.
 func NewPostgresConnection(dbConfig config.DbConfig) (*sql.DB, error) {
 	dataSourceName := fmt.Sprintf(
 		"postgres://%s:%s@%s:%s/%s?sslmode=disable",
@@ -28,6 +29,7 @@ func NewPostgresConnection(dbConfig config.DbConfig) (*sql.DB, error) {
 	return db, nil
 }
 
+// DBMigrate : Applies db migrations to a Postgres db instance using "migrate" pkg.
 func DBMigrate(dbInstance *sql.DB, dbConfig config.DbConfig) error {
 
 	driver, err := postgres.WithInstance(dbInstance, &postgres.Config{})

@@ -29,7 +29,6 @@ import (
 // @description This is Genealogy API in Go.
 
 // @host 0.0.0.0:9000
-// @BasePath /v1
 // @schemes http
 // @query.collection.format multi
 
@@ -59,7 +58,7 @@ func main() {
 
 	personHttpDelivery.NewPersonHandler(router, personService)
 	relationshipHttpDelivery.NewRelationshipHandler(router, relationshipService)
-	router.GET("/auth/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	gin.SetMode(gin.ReleaseMode)
 	if config.GetEnv().Debug {

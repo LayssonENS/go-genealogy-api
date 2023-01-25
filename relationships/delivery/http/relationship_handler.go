@@ -18,9 +18,8 @@ func NewRelationshipHandler(routerGroup *gin.Engine, us domain.RelationshipUseCa
 		RUseCase: us,
 	}
 
-	v1 := routerGroup.Group("/v1")
-	v1.GET("/relationships/:personId", handler.GetRelationshipByID)
-	v1.POST("/relationships/:personId", handler.CreateRelationship)
+	routerGroup.GET("/v1/relationships/:personId", handler.GetRelationshipByID)
+	routerGroup.POST("/v1/relationships/:personId", handler.CreateRelationship)
 }
 
 // GetRelationshipByID godoc
@@ -32,7 +31,7 @@ func NewRelationshipHandler(routerGroup *gin.Engine, us domain.RelationshipUseCa
 // @Param personId path int true "Person ID"
 // @Success 200 {object} domain.Member
 // @Failure 400	{object} domain.ErrorResponse
-// @Router /relationships/{personId} [GET]
+// @Router /v1/relationships/{personId} [GET]
 func (h *RelationshipHandler) GetRelationshipByID(c *gin.Context) {
 
 	accept := c.GetHeader("Accept")
@@ -80,7 +79,7 @@ func (h *RelationshipHandler) GetRelationshipByID(c *gin.Context) {
 // @Success 201 {object} string
 // @Failure 400 {object} domain.ErrorResponse
 // @Failure 422 {object} domain.ErrorResponse
-// @Router /relationships/{personId} [POST]
+// @Router /v1/relationships/{personId} [POST]
 func (h *RelationshipHandler) CreateRelationship(c *gin.Context) {
 	idParam, err := strconv.Atoi(c.Param("personId"))
 	if err != nil {

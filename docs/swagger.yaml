@@ -1,4 +1,3 @@
-basePath: /v1
 definitions:
   domain.ErrorResponse:
     properties:
@@ -80,7 +79,7 @@ info:
   title: Go Genealogy API
   version: "1.0"
 paths:
-  /person:
+  /v1/person:
     post:
       consumes:
       - application/json
@@ -110,7 +109,7 @@ paths:
       summary: Route to create person
       tags:
       - Person
-  /person/{personId}:
+  /v1/person/{personId}:
     get:
       consumes:
       - application/json
@@ -135,7 +134,7 @@ paths:
       summary: Route to fetch person by ID
       tags:
       - Person
-  /person/all:
+  /v1/person/all:
     get:
       consumes:
       - application/json
@@ -156,7 +155,7 @@ paths:
       summary: Route to return all people
       tags:
       - Person
-  /relationships/{personId}:
+  /v1/relationships/{personId}:
     get:
       consumes:
       - application/json

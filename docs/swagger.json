@@ -10,9 +10,8 @@
         "version": "1.0"
     },
     "host": "0.0.0.0:9000",
-    "basePath": "/v1",
     "paths": {
-        "/person": {
+        "/v1/person": {
             "post": {
                 "description": "Create person",
                 "consumes": [
@@ -58,7 +57,7 @@
                 }
             }
         },
-        "/person/all": {
+        "/v1/person/all": {
             "get": {
                 "description": "All people",
                 "consumes": [
@@ -90,7 +89,7 @@
                 }
             }
         },
-        "/person/{personId}": {
+        "/v1/person/{personId}": {
             "get": {
                 "description": "Fetch person",
                 "consumes": [
@@ -128,7 +127,7 @@
                 }
             }
         },
-        "/relationships/{personId}": {
+        "/v1/relationships/{personId}": {
             "get": {
                 "description": "Get relationships",
                 "consumes": [

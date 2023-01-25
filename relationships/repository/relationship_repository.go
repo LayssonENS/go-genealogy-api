@@ -16,6 +16,7 @@ func NewPostgresRelationshipRepository(db *sql.DB) domain.RelationshipRepository
 	}
 }
 
+// GetRelationshipByID : Retrieves all relationships of a person from the Postgres repository
 func (p *postgresPersonRepo) GetRelationshipByID(personId int64) (*domain.Member, error) {
 	var relationships []domain.Family
 	familyMembers := &domain.Member{}
@@ -123,6 +124,7 @@ func (p *postgresPersonRepo) GetRelationshipByID(personId int64) (*domain.Member
 
 }
 
+// CreateRelationship : creates a new parent-child relationship between two persons in the Postgres repository
 func (p *postgresPersonRepo) CreateRelationship(personId int64, relationship domain.Relationship) error {
 
 	if personId == relationship.ChildrenId || personId == relationship.ParentId {
@@ -181,6 +183,7 @@ func (p *postgresPersonRepo) CreateRelationship(personId int64, relationship dom
 	return nil
 }
 
+// getRelationships : Retrieves relationships (parents and children) of a person from the Postgres repository
 func (p *postgresPersonRepo) getRelationships(personId int64) ([]domain.Relation, error) {
 	var parents []domain.Relation
 	query := `WITH parents AS (

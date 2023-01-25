@@ -16,7 +16,7 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/person": {
+        "/v1/person": {
             "post": {
                 "description": "Create person",
                 "consumes": [
@@ -62,7 +62,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/person/all": {
+        "/v1/person/all": {
             "get": {
                 "description": "All people",
                 "consumes": [
@@ -94,7 +94,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/person/{personId}": {
+        "/v1/person/{personId}": {
             "get": {
                 "description": "Fetch person",
                 "consumes": [
@@ -132,7 +132,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/relationships/{personId}": {
+        "/v1/relationships/{personId}": {
             "get": {
                 "description": "Get relationships",
                 "consumes": [
@@ -342,7 +342,7 @@ const docTemplate = `{
 var SwaggerInfo = &swag.Spec{
 	Version:          "1.0",
 	Host:             "0.0.0.0:9000",
-	BasePath:         "/v1",
+	BasePath:         "",
 	Schemes:          []string{"http"},
 	Title:            "Go Genealogy API",
 	Description:      "This is Genealogy API in Go.",

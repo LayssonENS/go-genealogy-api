@@ -19,6 +19,7 @@ func NewPostgresPersonRepository(db *sql.DB) domain.PersonRepository {
 	}
 }
 
+// GetByID : Retrieves a person by ID from the Postgres repository
 func (p *postgresPersonRepo) GetByID(id int64) (domain.Person, error) {
 	var person domain.Person
 	err := p.DB.QueryRow(
@@ -34,6 +35,7 @@ func (p *postgresPersonRepo) GetByID(id int64) (domain.Person, error) {
 
 }
 
+// CreatePerson : Inserts a new person into the Postgres repository using the provided person request data
 func (p *postgresPersonRepo) CreatePerson(person domain.PersonRequest) error {
 	date, _ := time.Parse(dateLayout, person.BirthDate)
 	birthDate := date
@@ -47,6 +49,7 @@ func (p *postgresPersonRepo) CreatePerson(person domain.PersonRequest) error {
 	return nil
 }
 
+// GetAllPerson : Retrieves all person data from the Postgres repository
 func (p *postgresPersonRepo) GetAllPerson() ([]domain.Person, error) {
 	var people []domain.Person
 
