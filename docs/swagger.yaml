@@ -12,12 +12,12 @@ definitions:
         type: integer
       name:
         type: string
-      parents:
-        items:
-          $ref: '#/definitions/domain.Parents'
-        type: array
       relationship:
         type: string
+      relationships:
+        items:
+          $ref: '#/definitions/domain.Relationships'
+        type: array
     type: object
   domain.FamilyMembers:
     properties:
@@ -28,17 +28,6 @@ definitions:
           $ref: '#/definitions/domain.FamilyMember'
         type: array
       name:
-        type: string
-    type: object
-  domain.Parents:
-    properties:
-      family_connection:
-        type: integer
-      id:
-        type: integer
-      name:
-        type: string
-      relationship:
         type: string
     type: object
   domain.Person:
@@ -71,6 +60,15 @@ definitions:
         type: integer
       parent:
         type: integer
+    type: object
+  domain.Relationships:
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
+      relationship:
+        type: string
     type: object
 info:
   contact: {}

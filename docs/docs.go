@@ -243,14 +243,14 @@ const docTemplate = `{
                 "name": {
                     "type": "string"
                 },
-                "parents": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/domain.Parents"
-                    }
-                },
                 "relationship": {
                     "type": "string"
+                },
+                "relationships": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/domain.Relationships"
+                    }
                 }
             }
         },
@@ -267,23 +267,6 @@ const docTemplate = `{
                     }
                 },
                 "name": {
-                    "type": "string"
-                }
-            }
-        },
-        "domain.Parents": {
-            "type": "object",
-            "properties": {
-                "family_connection": {
-                    "type": "integer"
-                },
-                "id": {
-                    "type": "integer"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "relationship": {
                     "type": "string"
                 }
             }
@@ -333,6 +316,20 @@ const docTemplate = `{
                 },
                 "parent": {
                     "type": "integer"
+                }
+            }
+        },
+        "domain.Relationships": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "relationship": {
+                    "type": "string"
                 }
             }
         }

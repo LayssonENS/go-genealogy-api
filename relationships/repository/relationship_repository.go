@@ -24,6 +24,10 @@ func (p *postgresPersonRepo) GetRelationshipByID(personId int64) (*domain.Family
 					FROM person p
 				    JOIN relationships r ON p.id = r.person_id  
 					WHERE r.related_person_id = $1
+			   ), self_search AS (
+					SELECT p.id, p.name, 'self' AS relationship
+					FROM person p
+					WHERE p.id = $1
 			   ), childrens AS (
 					SELECT p.id, p.name, 'children' AS relationship
 					FROM person p
@@ -51,13 +55,11 @@ func (p *postgresPersonRepo) GetRelationshipByID(personId int64) (*domain.Family
 				    JOIN relationships r ON p.id = r.related_person_id 
 					WHERE r.person_id IN (SELECT id from aunts_uncles)
 				), siblings AS (
-				    SELECT p.id, p.name, (CASE 
-					WHEN p.id = $1 THEN 'self'
-					ELSE 'sibling'
-					END) AS relationship
+				    SELECT p.id, p.name, 'sibling' AS relationship
 					FROM person p
 				    JOIN relationships r ON p.id = r.related_person_id 
 					WHERE r.person_id IN (SELECT id from parents) 
+					AND p.id <> $1
 				), nieces_nephews AS (
 				    SELECT p.id, p.name, 'niece_nephew' AS relationship
 					FROM person p
@@ -66,6 +68,8 @@ func (p *postgresPersonRepo) GetRelationshipByID(personId int64) (*domain.Family
 					AND p.id NOT in (SELECT id FROM childrens) 
 				)
 				SELECT * FROM parents 
+				union
+				SELECT * FROM self_search
 				union
 				SELECT * FROM childrens 
 				UNION
@@ -100,11 +104,11 @@ func (p *postgresPersonRepo) GetRelationshipByID(personId int64) (*domain.Family
 			continue
 		}
 
-		parents, err := p.getParents(parent.ID)
+		parents, err := p.getRelationships(parent.ID)
 		if err != nil {
 			return nil, err
 		}
-		parent.Parents = parents
+		parent.Relationships = parents
 
 		relationships = append(relationships, parent)
 	}
@@ -177,12 +181,22 @@ func (p *postgresPersonRepo) CreateRelationship(personId int64, relationship dom
 	return nil
 }
 
-func (p *postgresPersonRepo) getParents(personId int64) ([]domain.Parents, error) {
-	var parents []domain.Parents
-	query := `SELECT p.id, p.name, 'parent' AS relationship
+func (p *postgresPersonRepo) getRelationships(personId int64) ([]domain.Relationships, error) {
+	var parents []domain.Relationships
+	query := `WITH parents AS (
+					SELECT p.id, p.name, 'parent' AS relationship
 					FROM person p
 				    JOIN relationships r ON p.id = r.person_id  
-					WHERE r.related_person_id = $1`
+					WHERE r.related_person_id = $1
+			   ), childrens AS (
+					SELECT p.id, p.name, 'children' AS relationship
+					FROM person p
+				    JOIN relationships r ON p.id = r.related_person_id 
+					WHERE r.person_id = $1
+				)
+				SELECT * FROM parents 
+				UNION
+				SELECT * FROM childrens`
 	rows, err := p.DB.Query(query, personId)
 	if err != nil {
 		return nil, err
@@ -190,7 +204,7 @@ func (p *postgresPersonRepo) getParents(personId int64) ([]domain.Parents, error
 	defer rows.Close()
 
 	for rows.Next() {
-		var parent domain.Parents
+		var parent domain.Relationships
 		err := rows.Scan(&parent.ID, &parent.Name, &parent.Relationship)
 		if err != nil {
 			return nil, err
