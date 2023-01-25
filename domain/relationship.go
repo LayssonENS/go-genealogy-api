@@ -6,10 +6,18 @@ type Relationship struct {
 }
 
 type FamilyMember struct {
+	ID               int64     `json:"id"`
+	Name             string    `json:"name"`
+	Relationship     string    `json:"relationship"`
+	FamilyConnection int64     `json:"family_connection"`
+	Parents          []Parents `json:"parents"`
+}
+
+type Parents struct {
 	ID               int64  `json:"id"`
 	Name             string `json:"name"`
-	Relationship     string `json:"relationship"`
 	FamilyConnection int64  `json:"family_connection"`
+	Relationship     string `json:"relationship"`
 }
 
 type FamilyMembers struct {

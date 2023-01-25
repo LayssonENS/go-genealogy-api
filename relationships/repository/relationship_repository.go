@@ -20,62 +20,66 @@ func (p *postgresPersonRepo) GetRelationshipByID(personId int64) (*domain.Family
 	var relationships []domain.FamilyMember
 	familyMembers := &domain.FamilyMembers{}
 	query := `WITH parents AS (
-				SELECT DISTINCT ON (p.id) p.id, p.name, 
-					(CASE 
-						WHEN r.related_person_id = $1 and relationship='children' THEN 
-							CASE 
-								WHEN p.id = $1 THEN 'self'
-								ELSE 'parent'
-							END
-						WHEN r.person_id = $1 and relationship='children' THEN 
-							CASE 
-								WHEN p.id = $1 THEN 'self'
-								ELSE relationship
-							END
-						ELSE relationship
-					END) as relationship 
-				FROM person p
-				LEFT JOIN relationships r ON p.id = r.related_person_id OR p.id = r.person_id
-				WHERE r.person_id = $1 OR r.related_person_id = $1
+					SELECT p.id, p.name, 'parent' AS relationship
+					FROM person p
+				    JOIN relationships r ON p.id = r.person_id  
+					WHERE r.related_person_id = $1
+			   ), childrens AS (
+					SELECT p.id, p.name, 'children' AS relationship
+					FROM person p
+				    JOIN relationships r ON p.id = r.related_person_id 
+					WHERE r.person_id = $1
 				), grandparents AS (
-					SELECT p.id, p.name, 'grandparent' AS relationship FROM person p
-					JOIN relationships r ON p.id = r.related_person_id
-					WHERE r.person_id IN (SELECT id FROM parents where relationship != 'children') AND r.relationship = 'parent' AND p.id NOT in (SELECT id FROM parents)
-				), aunts_uncles AS (
-					SELECT p.id, p.name, 'aunt_uncle' AS relationship FROM person p
-					JOIN relationships r ON p.id = r.related_person_id
-					WHERE r.person_id IN (SELECT id FROM grandparents) AND r.relationship = 'children' AND p.id NOT in (SELECT id FROM parents)
-				), cousin AS (
-					SELECT p.id, p.name, 'cousin' AS relationship FROM person p
-					JOIN relationships r ON p.id = r.related_person_id
-					WHERE r.person_id IN (SELECT id FROM aunts_uncles) AND r.relationship = 'children' AND p.id NOT in (SELECT id FROM parents)
-				),siblings AS (
-					SELECT p.id, p.name, 'sibling' AS relationship FROM person p
-					JOIN relationships r ON p.id = r.related_person_id
-					WHERE r.person_id IN (SELECT id FROM parents where relationship != 'children') AND r.relationship = 'children' AND p.id NOT in (SELECT id FROM parents)
-				), nieces_nephews AS (
-					SELECT p.id, p.name, 'nieces_nephews' AS relationship FROM person p
-					JOIN relationships r ON p.id = r.related_person_id
-					WHERE r.person_id IN (SELECT id FROM siblings) AND r.relationship = 'children' AND p.id NOT in (SELECT id FROM parents)
+					SELECT p.id, p.name, 'grandparent' AS relationship
+					FROM person p
+				    JOIN relationships r ON p.id = r.person_id 
+					WHERE r.related_person_id IN (SELECT id from parents)
 				), grandchild AS (
-					SELECT p.id, p.name, 'grandchild' AS relationship FROM person p
-					JOIN relationships r ON p.id = r.related_person_id
-					WHERE r.person_id IN (SELECT id FROM parents where relationship = 'children') AND r.relationship = 'children' AND p.id NOT in (SELECT id FROM parents)
-				 
+				    SELECT p.id, p.name, 'grandchild' AS relationship
+					FROM person p
+				    JOIN relationships r ON p.id = r.related_person_id 
+					WHERE r.person_id IN (SELECT id from childrens)
+				), aunts_uncles AS (
+				    SELECT p.id, p.name, 'aunt_uncle' AS relationship
+					FROM person p
+				    JOIN relationships r ON p.id = r.related_person_id 
+					WHERE r.person_id IN (SELECT id from grandparents)
+					AND p.id NOT in (SELECT id FROM parents)
+				), cousins AS (
+				    SELECT p.id, p.name, 'cousin' AS relationship
+					FROM person p
+				    JOIN relationships r ON p.id = r.related_person_id 
+					WHERE r.person_id IN (SELECT id from aunts_uncles)
+				), siblings AS (
+				    SELECT p.id, p.name, (CASE 
+					WHEN p.id = $1 THEN 'self'
+					ELSE 'sibling'
+					END) AS relationship
+					FROM person p
+				    JOIN relationships r ON p.id = r.related_person_id 
+					WHERE r.person_id IN (SELECT id from parents) 
+				), nieces_nephews AS (
+				    SELECT p.id, p.name, 'niece_nephew' AS relationship
+					FROM person p
+				    JOIN relationships r ON p.id = r.related_person_id 
+					WHERE r.person_id IN (SELECT id from siblings)
+					AND p.id NOT in (SELECT id FROM childrens) 
 				)
-				SELECT distinct * FROM parents 
+				SELECT * FROM parents 
+				union
+				SELECT * FROM childrens 
 				UNION
 				SELECT * FROM grandparents
 				UNION
+				SELECT * FROM grandchild
+				UNION
 				SELECT * FROM aunts_uncles
 				UNION
-				SELECT * FROM cousin
+				SELECT * FROM cousins
 				UNION
 				SELECT * FROM siblings
 				UNION
-				SELECT * FROM nieces_nephews
-				UNION
-				SELECT * FROM grandchild`
+				SELECT * FROM nieces_nephews`
 	rows, err := p.DB.Query(query, personId)
 	if err != nil {
 		return nil, err
@@ -95,6 +99,12 @@ func (p *postgresPersonRepo) GetRelationshipByID(personId int64) (*domain.Family
 			familyMembers.Name = parent.Name
 			continue
 		}
+
+		parents, err := p.getParents(parent.ID)
+		if err != nil {
+			return nil, err
+		}
+		parent.Parents = parents
 
 		relationships = append(relationships, parent)
 	}
@@ -131,6 +141,8 @@ func (p *postgresPersonRepo) CreateRelationship(personId int64, relationship dom
 			for _, familyMember := range family.Members {
 				if familyMember.ID == personId && familyMember.Relationship == "parent" {
 					return domain.ErrDuplicateRelation
+				} else if familyMember.ID == personId {
+					return domain.ErrIncestuousRelation
 				}
 			}
 		}
@@ -147,18 +159,45 @@ func (p *postgresPersonRepo) CreateRelationship(personId int64, relationship dom
 			return err
 		}
 
-		if len(family.Members) > 0 {
+		if family != nil {
 			for _, familyMember := range family.Members {
 				if familyMember.ID == personId && familyMember.Relationship == "children" {
 					return domain.ErrDuplicateRelation
+				} else if familyMember.ID == personId {
+					return domain.ErrIncestuousRelation
 				}
 			}
 		}
 
-		_, err = prepareQuery.Exec(personId, relationship.ParentId, "parent")
+		_, err = prepareQuery.Exec(relationship.ParentId, personId, "children")
 		if err != nil {
 			return err
 		}
 	}
 	return nil
+}
+
+func (p *postgresPersonRepo) getParents(personId int64) ([]domain.Parents, error) {
+	var parents []domain.Parents
+	query := `SELECT p.id, p.name, 'parent' AS relationship
+					FROM person p
+				    JOIN relationships r ON p.id = r.person_id  
+					WHERE r.related_person_id = $1`
+	rows, err := p.DB.Query(query, personId)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var parent domain.Parents
+		err := rows.Scan(&parent.ID, &parent.Name, &parent.Relationship)
+		if err != nil {
+			return nil, err
+		}
+		parents = append(parents, parent)
+	}
+
+	return parents, nil
+
 }
