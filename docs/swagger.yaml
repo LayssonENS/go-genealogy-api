@@ -12,6 +12,10 @@ definitions:
         type: integer
       name:
         type: string
+      parents:
+        items:
+          $ref: '#/definitions/domain.Parents'
+        type: array
       relationship:
         type: string
     type: object
@@ -24,6 +28,17 @@ definitions:
           $ref: '#/definitions/domain.FamilyMember'
         type: array
       name:
+        type: string
+    type: object
+  domain.Parents:
+    properties:
+      family_connection:
+        type: integer
+      id:
+        type: integer
+      name:
+        type: string
+      relationship:
         type: string
     type: object
   domain.Person:

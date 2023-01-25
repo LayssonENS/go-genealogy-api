@@ -11,6 +11,8 @@ var (
 	ErrDuplicateRelation = errors.New("relationship already exists")
 	// ErrRelationNotFound will throw if the searched relationship cannot be found.
 	ErrRelationNotFound = errors.New("relationship not found")
+	// ErrIncestuousRelation will throw if the attempted relationship is incestuous.
+	ErrIncestuousRelation = errors.New("cannot create incestuous relationship")
 )
 
 type ErrorResponse struct {
