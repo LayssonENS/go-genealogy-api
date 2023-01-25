@@ -1,3 +1,4 @@
+basePath: /v1
 definitions:
   domain.ErrorResponse:
     properties:
@@ -72,8 +73,12 @@ definitions:
       parent:
         type: integer
     type: object
+host: 0.0.0.0:9000
 info:
   contact: {}
+  description: This is Genealogy API in Go.
+  title: Go Genealogy API
+  version: "1.0"
 paths:
   /person:
     post:
@@ -210,4 +215,6 @@ paths:
       summary: Route to create relationships
       tags:
       - Relationship
+schemes:
+- http
 swagger: "2.0"
