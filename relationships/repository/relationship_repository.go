@@ -16,9 +16,9 @@ func NewPostgresRelationshipRepository(db *sql.DB) domain.RelationshipRepository
 	}
 }
 
-func (p *postgresPersonRepo) GetRelationshipByID(personId int64) (*domain.FamilyMembers, error) {
-	var relationships []domain.FamilyMember
-	familyMembers := &domain.FamilyMembers{}
+func (p *postgresPersonRepo) GetRelationshipByID(personId int64) (*domain.Member, error) {
+	var relationships []domain.Family
+	familyMembers := &domain.Member{}
 	query := `WITH parents AS (
 					SELECT p.id, p.name, 'parent' AS relationship
 					FROM person p
@@ -91,7 +91,7 @@ func (p *postgresPersonRepo) GetRelationshipByID(personId int64) (*domain.Family
 	defer rows.Close()
 
 	for rows.Next() {
-		var parent domain.FamilyMember
+		var parent domain.Family
 		err := rows.Scan(&parent.ID, &parent.Name, &parent.Relationship)
 		if err != nil {
 			return nil, err
@@ -181,8 +181,8 @@ func (p *postgresPersonRepo) CreateRelationship(personId int64, relationship dom
 	return nil
 }
 
-func (p *postgresPersonRepo) getRelationships(personId int64) ([]domain.Relationships, error) {
-	var parents []domain.Relationships
+func (p *postgresPersonRepo) getRelationships(personId int64) ([]domain.Relation, error) {
+	var parents []domain.Relation
 	query := `WITH parents AS (
 					SELECT p.id, p.name, 'parent' AS relationship
 					FROM person p
@@ -204,7 +204,7 @@ func (p *postgresPersonRepo) getRelationships(personId int64) ([]domain.Relation
 	defer rows.Close()
 
 	for rows.Next() {
-		var parent domain.Relationships
+		var parent domain.Relation
 		err := rows.Scan(&parent.ID, &parent.Name, &parent.Relationship)
 		if err != nil {
 			return nil, err

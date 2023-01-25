@@ -1,10 +1,12 @@
 package http
 
 import (
+	"encoding/json"
 	"github.com/LayssonENS/go-genealogy-api/domain"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"strconv"
+	"strings"
 )
 
 type RelationshipHandler struct {
@@ -15,8 +17,10 @@ func NewRelationshipHandler(routerGroup *gin.Engine, us domain.RelationshipUseCa
 	handler := &RelationshipHandler{
 		RUseCase: us,
 	}
-	routerGroup.GET("/relationships/:personId", handler.GetRelationshipByID)
-	routerGroup.POST("/relationships/:personId", handler.CreateRelationship)
+
+	v1 := routerGroup.Group("/v1")
+	v1.GET("/relationships/:personId", handler.GetRelationshipByID)
+	v1.POST("/relationships/:personId", handler.CreateRelationship)
 }
 
 // GetRelationshipByID godoc
@@ -26,10 +30,13 @@ func NewRelationshipHandler(routerGroup *gin.Engine, us domain.RelationshipUseCa
 // @Accept  json
 // @Produce  json
 // @Param personId path int true "Person ID"
-// @Success 200 {object} domain.FamilyMembers
+// @Success 200 {object} domain.Member
 // @Failure 400	{object} domain.ErrorResponse
 // @Router /relationships/{personId} [GET]
 func (h *RelationshipHandler) GetRelationshipByID(c *gin.Context) {
+
+	accept := c.GetHeader("Accept")
+
 	idParam, err := strconv.Atoi(c.Param("personId"))
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid id"})
@@ -40,6 +47,22 @@ func (h *RelationshipHandler) GetRelationshipByID(c *gin.Context) {
 	response, err := h.RUseCase.GetRelationshipByID(relationshipId)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, domain.ErrorResponse{ErrorMessage: err.Error()})
+		return
+	}
+
+	if strings.Contains(accept, "text/xml") ||
+		strings.Contains(accept, "application/xml") {
+		c.XML(http.StatusOK, response)
+		return
+	}
+
+	if strings.Contains(accept, "application/octet-stream") {
+		b, err := json.Marshal(response)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "convert error"})
+			return
+		}
+		c.Data(http.StatusOK, accept, b)
 		return
 	}
 

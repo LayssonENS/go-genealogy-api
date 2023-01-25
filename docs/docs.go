@@ -158,7 +158,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/domain.FamilyMembers"
+                            "$ref": "#/definitions/domain.Member"
                         }
                     },
                     "400": {
@@ -231,7 +231,7 @@ const docTemplate = `{
                 }
             }
         },
-        "domain.FamilyMember": {
+        "domain.Family": {
             "type": "object",
             "properties": {
                 "family_connection": {
@@ -249,12 +249,12 @@ const docTemplate = `{
                 "relationships": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/domain.Relationships"
+                        "$ref": "#/definitions/domain.Relation"
                     }
                 }
             }
         },
-        "domain.FamilyMembers": {
+        "domain.Member": {
             "type": "object",
             "properties": {
                 "id": {
@@ -263,7 +263,7 @@ const docTemplate = `{
                 "members": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/domain.FamilyMember"
+                        "$ref": "#/definitions/domain.Family"
                     }
                 },
                 "name": {
@@ -294,6 +294,7 @@ const docTemplate = `{
         "domain.PersonRequest": {
             "type": "object",
             "required": [
+                "email",
                 "name"
             ],
             "properties": {
@@ -304,6 +305,21 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "name": {
+                    "type": "string",
+                    "minLength": 3
+                }
+            }
+        },
+        "domain.Relation": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "relationship": {
                     "type": "string"
                 }
             }
@@ -316,20 +332,6 @@ const docTemplate = `{
                 },
                 "parent": {
                     "type": "integer"
-                }
-            }
-        },
-        "domain.Relationships": {
-            "type": "object",
-            "properties": {
-                "id": {
-                    "type": "integer"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "relationship": {
-                    "type": "string"
                 }
             }
         }

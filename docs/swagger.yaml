@@ -4,7 +4,7 @@ definitions:
       error:
         type: string
     type: object
-  domain.FamilyMember:
+  domain.Family:
     properties:
       family_connection:
         type: integer
@@ -16,16 +16,16 @@ definitions:
         type: string
       relationships:
         items:
-          $ref: '#/definitions/domain.Relationships'
+          $ref: '#/definitions/domain.Relation'
         type: array
     type: object
-  domain.FamilyMembers:
+  domain.Member:
     properties:
       id:
         type: integer
       members:
         items:
-          $ref: '#/definitions/domain.FamilyMember'
+          $ref: '#/definitions/domain.Family'
         type: array
       name:
         type: string
@@ -50,18 +50,13 @@ definitions:
       email:
         type: string
       name:
+        minLength: 3
         type: string
     required:
+    - email
     - name
     type: object
-  domain.Relationship:
-    properties:
-      children:
-        type: integer
-      parent:
-        type: integer
-    type: object
-  domain.Relationships:
+  domain.Relation:
     properties:
       id:
         type: integer
@@ -69,6 +64,13 @@ definitions:
         type: string
       relationship:
         type: string
+    type: object
+  domain.Relationship:
+    properties:
+      children:
+        type: integer
+      parent:
+        type: integer
     type: object
 info:
   contact: {}
@@ -166,7 +168,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/domain.FamilyMembers'
+            $ref: '#/definitions/domain.Member'
         "400":
           description: Bad Request
           schema:

@@ -28,8 +28,8 @@ import (
 // @version 1.0
 // @description This is Genealogy API in Go.
 
-// @host 0.0.0.0:8000
-// @BasePath /auth
+// @host 0.0.0.0:9000
+// @BasePath /v1
 // @schemes http
 // @query.collection.format multi
 

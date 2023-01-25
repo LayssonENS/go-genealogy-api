@@ -146,7 +146,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/domain.FamilyMembers"
+                            "$ref": "#/definitions/domain.Member"
                         }
                     },
                     "400": {
@@ -219,7 +219,7 @@
                 }
             }
         },
-        "domain.FamilyMember": {
+        "domain.Family": {
             "type": "object",
             "properties": {
                 "family_connection": {
@@ -237,12 +237,12 @@
                 "relationships": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/domain.Relationships"
+                        "$ref": "#/definitions/domain.Relation"
                     }
                 }
             }
         },
-        "domain.FamilyMembers": {
+        "domain.Member": {
             "type": "object",
             "properties": {
                 "id": {
@@ -251,7 +251,7 @@
                 "members": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/domain.FamilyMember"
+                        "$ref": "#/definitions/domain.Family"
                     }
                 },
                 "name": {
@@ -282,6 +282,7 @@
         "domain.PersonRequest": {
             "type": "object",
             "required": [
+                "email",
                 "name"
             ],
             "properties": {
@@ -292,6 +293,21 @@
                     "type": "string"
                 },
                 "name": {
+                    "type": "string",
+                    "minLength": 3
+                }
+            }
+        },
+        "domain.Relation": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "relationship": {
                     "type": "string"
                 }
             }
@@ -304,20 +320,6 @@
                 },
                 "parent": {
                     "type": "integer"
-                }
-            }
-        },
-        "domain.Relationships": {
-            "type": "object",
-            "properties": {
-                "id": {
-                    "type": "integer"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "relationship": {
-                    "type": "string"
                 }
             }
         }

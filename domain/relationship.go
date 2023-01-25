@@ -1,36 +1,39 @@
 package domain
 
+import "encoding/xml"
+
 type Relationship struct {
 	ParentId   int64 `json:"parent"`
 	ChildrenId int64 `json:"children"`
 }
 
-type FamilyMember struct {
-	ID               int64           `json:"id"`
-	Name             string          `json:"name"`
-	Relationship     string          `json:"relationship"`
-	FamilyConnection int64           `json:"family_connection"`
-	Relationships    []Relationships `json:"relationships"`
+type Family struct {
+	ID               int64      `json:"id" xml:"id"`
+	Name             string     `json:"name" xml:"name"`
+	Relationship     string     `json:"relationship" xml:"relationship"`
+	FamilyConnection int64      `json:"family_connection" xml:"family_connection"`
+	Relationships    []Relation `json:"relationships" xml:"relationships>relation"`
 }
 
-type Relationships struct {
-	ID           int64  `json:"id"`
-	Name         string `json:"name"`
-	Relationship string `json:"relationship"`
+type Relation struct {
+	ID           int64  `json:"id" xml:"id"`
+	Name         string `json:"name" xml:"name"`
+	Relationship string `json:"relationship" xml:"relationship"`
 }
 
-type FamilyMembers struct {
-	ID      int64          `json:"id"`
-	Name    string         `json:"name"`
-	Members []FamilyMember `json:"members"`
+type Member struct {
+	XMLName xml.Name `json:"-" xml:"family"`
+	ID      int64    `json:"id" xml:"id"`
+	Name    string   `json:"name" xml:"name"`
+	Members []Family `json:"members" xml:"members>member"`
 }
 
 type RelationshipUseCase interface {
-	GetRelationshipByID(personId int64) (*FamilyMembers, error)
+	GetRelationshipByID(personId int64) (*Member, error)
 	CreateRelationship(personId int64, person Relationship) error
 }
 
 type RelationshipRepository interface {
-	GetRelationshipByID(personId int64) (*FamilyMembers, error)
+	GetRelationshipByID(personId int64) (*Member, error)
 	CreateRelationship(personId int64, relationship Relationship) error
 }

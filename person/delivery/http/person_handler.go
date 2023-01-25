@@ -15,9 +15,11 @@ func NewPersonHandler(routerGroup *gin.Engine, us domain.PersonUseCase) {
 	handler := &PersonHandler{
 		PUseCase: us,
 	}
-	routerGroup.GET("/person/:personId", handler.GetByID)
-	routerGroup.GET("/person/all", handler.GetAllPerson)
-	routerGroup.POST("/person", handler.CreatePerson)
+
+	v1 := routerGroup.Group("/v1")
+	v1.GET("/person/:personId", handler.GetByID)
+	v1.GET("/person/all", handler.GetAllPerson)
+	v1.POST("/person", handler.CreatePerson)
 }
 
 // GetByID godoc
