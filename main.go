@@ -28,10 +28,6 @@ import (
 // @version 1.0
 // @description This is Genealogy API in Go.
 
-// @host 0.0.0.0:9000
-// @schemes http
-// @query.collection.format multi
-
 func main() {
 	ctx := context.Background()
 	log := logrus.New()
@@ -58,7 +54,7 @@ func main() {
 
 	personHttpDelivery.NewPersonHandler(router, personService)
 	relationshipHttpDelivery.NewRelationshipHandler(router, relationshipService)
-	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+	router.GET("/genealogy/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	gin.SetMode(gin.ReleaseMode)
 	if config.GetEnv().Debug {

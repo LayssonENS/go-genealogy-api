@@ -1,7 +1,4 @@
 {
-    "schemes": [
-        "http"
-    ],
     "swagger": "2.0",
     "info": {
         "description": "This is Genealogy API in Go.",
@@ -9,7 +6,6 @@
         "contact": {},
         "version": "1.0"
     },
-    "host": "0.0.0.0:9000",
     "paths": {
         "/v1/person": {
             "post": {

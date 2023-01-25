@@ -341,9 +341,9 @@ const docTemplate = `{
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
 	Version:          "1.0",
-	Host:             "0.0.0.0:9000",
+	Host:             "",
 	BasePath:         "",
-	Schemes:          []string{"http"},
+	Schemes:          []string{},
 	Title:            "Go Genealogy API",
 	Description:      "This is Genealogy API in Go.",
 	InfoInstanceName: "swagger",
