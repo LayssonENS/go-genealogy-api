@@ -5,8 +5,8 @@ import (
 )
 
 type PersonRequest struct {
-	Name      string `json:"name" binding:"required"`
-	Email     string `json:"email"`
+	Name      string `json:"name" binding:"required,min=3"`
+	Email     string `json:"email" binding:"required,email"`
 	BirthDate string `json:"birth_date"`
 }
 
