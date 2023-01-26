@@ -30,21 +30,21 @@ func TestRelationshipHandler_GetRelationshipByID(t *testing.T) {
 			}},
 	}, nil)
 
-	// Criação da instância do handler com o mocks do repositório
+	// "Creating an instance of the handler with mock repository
 	handler := RelationshipHandler{RUseCase: usecase2.NewRelationshipUseCase(mockRepo)}
 
-	// Criação do contexto de teste
+	// Creating the test context
 	w := httptest.NewRecorder()
 	c, _ := gin.CreateTestContext(w)
 
 	c.Writer.Header().Set("Content-Type", "application/json")
 
-	// Configuração do parâmetro de ID na requisição
+	// Setting the ID parameter in the request
 	c.Params = gin.Params{gin.Param{Key: "personId", Value: "1"}}
 	c.Request, _ = http.NewRequest("GET", "/", nil)
 	c.Request.Header.Add("Accept", "application/json")
 
-	// Execução da rota
+	// Execution of the route
 	defer func() {
 		if r := recover(); r != nil {
 			assert.Equal(t, "Error occurred while marshalling JSON", r)
@@ -53,10 +53,10 @@ func TestRelationshipHandler_GetRelationshipByID(t *testing.T) {
 
 	handler.GetRelationshipByID(c)
 
-	// Verificação do status da resposta
+	// Checking the status of the response
 	assert.Equal(t, http.StatusOK, c.Writer.Status())
 
-	// Verificação do conteúdo da resposta
+	// Checking the body of the response
 	var response domain.Member
 	err := json.Unmarshal([]byte(w.Body.String()), &response)
 	if err != nil {
@@ -75,16 +75,16 @@ func TestRelationshipHandler_CreateRelationship(t *testing.T) {
 	mockRepo := mock_relationship.NewMockRelationshipRepository(ctrl)
 	mockRepo.EXPECT().CreateRelationship(gomock.Any(), gomock.Any()).Return(nil)
 
-	// Criação da instância do handler com o mocks do repositório
+	// "Creating an instance of the handler with mock repository
 	handler := RelationshipHandler{RUseCase: usecase2.NewRelationshipUseCase(mockRepo)}
 
-	// Criação do contexto de teste
+	// Creating the test context
 	w := httptest.NewRecorder()
 	c, _ := gin.CreateTestContext(w)
 
 	c.Writer.Header().Set("Content-Type", "application/json")
 
-	// Configuração do parâmetro de ID na requisição
+	// Setting the ID parameter in the request
 	c.Params = gin.Params{gin.Param{Key: "personId", Value: "1"}}
 
 	jsonRequest := `{
@@ -95,7 +95,7 @@ func TestRelationshipHandler_CreateRelationship(t *testing.T) {
 	c.Request, _ = http.NewRequest(http.MethodPost, "/", bytes.NewBuffer([]byte(jsonRequest)))
 	c.Writer.Header().Set("Content-Type", "application/json")
 
-	// Execução da rota
+	// Execution of the route
 	defer func() {
 		if r := recover(); r != nil {
 			assert.Equal(t, "Error occurred while marshalling JSON", r)
@@ -104,7 +104,7 @@ func TestRelationshipHandler_CreateRelationship(t *testing.T) {
 
 	handler.CreateRelationship(c)
 
-	// Verificação do status da resposta
+	// Checking the status of the response
 	assert.Equal(t, http.StatusCreated, c.Writer.Status())
 
 }

@@ -30,19 +30,19 @@ func TestGetByID(t *testing.T) {
 		CreatedAt: time.Now(),
 	}, nil)
 
-	// Criação da instância do handler com o mocks do repositório
+	// Creating an instance of the handler with mock repository
 	handler := PersonHandler{PUseCase: usecase.NewPersonUseCase(mockRepo)}
 
-	// Criação do contexto de teste
+	// Creating the test context
 	w := httptest.NewRecorder()
 	c, _ := gin.CreateTestContext(w)
 
 	c.Writer.Header().Set("Content-Type", "application/json")
 
-	// Configuração do parâmetro de ID na requisição
+	// Setting the ID parameter in the request
 	c.Params = gin.Params{gin.Param{Key: "personId", Value: "1"}}
 
-	// Execução da rota
+	// Execution of the route
 	defer func() {
 		if r := recover(); r != nil {
 			assert.Equal(t, "Error occurred while marshalling JSON", r)
@@ -50,10 +50,10 @@ func TestGetByID(t *testing.T) {
 	}()
 	handler.GetByID(c)
 
-	// Verificação do status da resposta
+	// Checking the status of the response
 	assert.Equal(t, http.StatusOK, c.Writer.Status())
 
-	// Verificação do conteúdo da resposta
+	// Checking the body of the response
 	var response domain.Person
 	err := json.Unmarshal([]byte(w.Body.String()), &response)
 	if err != nil {
@@ -88,19 +88,19 @@ func TestGetAllPerson(t *testing.T) {
 		},
 	}, nil)
 
-	// Criação da instância do handler com o mocks do repositório
+	// Creating an instance of the handler with mock repository
 	handler := PersonHandler{PUseCase: usecase.NewPersonUseCase(mockRepo)}
 
-	// Criação do contexto de teste
+	// Creating the test context
 	w := httptest.NewRecorder()
 	c, _ := gin.CreateTestContext(w)
 
 	c.Writer.Header().Set("Content-Type", "application/json")
 
-	// Configuração do parâmetro de ID na requisição
+	// Setting the ID parameter in the request
 	c.Params = gin.Params{gin.Param{Key: "personId", Value: "1"}}
 
-	// Execução da rota
+	// Execution of the route
 	defer func() {
 		if r := recover(); r != nil {
 			assert.Equal(t, "Error occurred while marshalling JSON", r)
@@ -109,10 +109,10 @@ func TestGetAllPerson(t *testing.T) {
 
 	handler.GetAllPerson(c)
 
-	// Verificação do status da resposta
+	// Checking the status of the response
 	assert.Equal(t, http.StatusOK, c.Writer.Status())
 
-	// Verificação do conteúdo da resposta
+	// Checking the body of the response
 	var response []domain.Person
 	err := json.Unmarshal([]byte(w.Body.String()), &response)
 	if err != nil {
@@ -137,10 +137,10 @@ func TestCreatePerson(t *testing.T) {
 		BirthDate: "1998-01-01",
 	}).Return(nil)
 
-	// Criação da instância do handler com o mocks do repositório
+	// Creating an instance of the handler with mock repository
 	handler := PersonHandler{PUseCase: usecase.NewPersonUseCase(mockRepo)}
 
-	// Criação do contexto de teste
+	// Creating the test context
 	w := httptest.NewRecorder()
 	c, _ := gin.CreateTestContext(w)
 
@@ -153,7 +153,7 @@ func TestCreatePerson(t *testing.T) {
 	c.Request, _ = http.NewRequest(http.MethodPost, "/", bytes.NewBuffer([]byte(jsonRequest)))
 	c.Writer.Header().Set("Content-Type", "application/json")
 
-	// Execução da rota
+	// Execution of the route
 	defer func() {
 		if r := recover(); r != nil {
 			assert.Equal(t, "Error occurred while marshalling JSON", r)
@@ -162,7 +162,7 @@ func TestCreatePerson(t *testing.T) {
 
 	handler.CreatePerson(c)
 
-	// Verificação do status da resposta
+	// Checking the status of the response
 	assert.Equal(t, http.StatusCreated, c.Writer.Status())
 
 }
