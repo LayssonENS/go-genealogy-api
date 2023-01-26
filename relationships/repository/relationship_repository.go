@@ -5,19 +5,19 @@ import (
 	"github.com/LayssonENS/go-genealogy-api/domain"
 )
 
-type postgresPersonRepo struct {
+type postgresRelationshipRepo struct {
 	DB *sql.DB
 }
 
 // NewPostgresRelationshipRepository will create an implementation of relationship.Repository
 func NewPostgresRelationshipRepository(db *sql.DB) domain.RelationshipRepository {
-	return &postgresPersonRepo{
+	return &postgresRelationshipRepo{
 		DB: db,
 	}
 }
 
 // GetRelationshipByID : Retrieves all relationships of a person from the Postgres repository
-func (p *postgresPersonRepo) GetRelationshipByID(personId int64) (*domain.Member, error) {
+func (p *postgresRelationshipRepo) GetRelationshipByID(personId int64) (*domain.Member, error) {
 	var relationships []domain.Family
 	familyMembers := &domain.Member{}
 	query := `WITH parents AS (
@@ -125,17 +125,13 @@ func (p *postgresPersonRepo) GetRelationshipByID(personId int64) (*domain.Member
 }
 
 // CreateRelationship : creates a new parent-child relationship between two persons in the Postgres repository
-func (p *postgresPersonRepo) CreateRelationship(personId int64, relationship domain.Relationship) error {
+func (p *postgresRelationshipRepo) CreateRelationship(personId int64, relationship domain.Relationship) error {
 
 	if personId == relationship.ChildrenId || personId == relationship.ParentId {
 		return domain.ErrInvalidSelfRelation
 	}
 
-	prepareQuery, err := p.DB.Prepare("INSERT INTO relationships (person_id, related_person_id, relationship) VALUES($1, $2, $3)")
-	if err != nil {
-		return err
-	}
-	defer prepareQuery.Close()
+	query := `INSERT INTO relationships (person_id, related_person_id, relationship) VALUES ($1, $2, $3) `
 
 	if relationship.ChildrenId != 0 {
 		family, err := p.GetRelationshipByID(relationship.ChildrenId)
@@ -153,7 +149,7 @@ func (p *postgresPersonRepo) CreateRelationship(personId int64, relationship dom
 			}
 		}
 
-		_, err = prepareQuery.Exec(personId, relationship.ChildrenId, domain.ChildrenName)
+		_, err = p.DB.Exec(query, personId, relationship.ChildrenId, domain.ChildrenName)
 		if err != nil {
 			return err
 		}
@@ -175,7 +171,7 @@ func (p *postgresPersonRepo) CreateRelationship(personId int64, relationship dom
 			}
 		}
 
-		_, err = prepareQuery.Exec(relationship.ParentId, personId, "children")
+		_, err = p.DB.Exec(query, relationship.ParentId, personId, "children")
 		if err != nil {
 			return err
 		}
@@ -184,7 +180,7 @@ func (p *postgresPersonRepo) CreateRelationship(personId int64, relationship dom
 }
 
 // getRelationships : Retrieves relationships (parents and children) of a person from the Postgres repository
-func (p *postgresPersonRepo) getRelationships(personId int64) ([]domain.Relation, error) {
+func (p *postgresRelationshipRepo) getRelationships(personId int64) ([]domain.Relation, error) {
 	var parents []domain.Relation
 	query := `WITH parents AS (
 					SELECT p.id, p.name, 'parent' AS relationship
