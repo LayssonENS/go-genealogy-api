@@ -3,17 +3,18 @@ package http
 import (
 	"bytes"
 	"encoding/json"
+	"net/http"
+	"net/http/httptest"
+	"testing"
+	"time"
+
 	"github.com/LayssonENS/go-genealogy-api/domain"
-	mock_domain "github.com/LayssonENS/go-genealogy-api/person/mocks"
+	mockDomain "github.com/LayssonENS/go-genealogy-api/person/mocks"
 	"github.com/LayssonENS/go-genealogy-api/person/usecase"
 	"github.com/gin-gonic/gin"
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
 	_ "github.com/stretchr/testify/mock"
-	"net/http"
-	"net/http/httptest"
-	"testing"
-	"time"
 )
 
 func TestGetByID(t *testing.T) {
@@ -21,7 +22,7 @@ func TestGetByID(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
-	mockRepo := mock_domain.NewMockPersonRepository(ctrl)
+	mockRepo := mockDomain.NewMockPersonRepository(ctrl)
 	mockRepo.EXPECT().GetByID(gomock.Any()).Return(domain.Person{
 		ID:        1,
 		Name:      "John Doe",
@@ -70,7 +71,7 @@ func TestGetAllPerson(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
-	mockRepo := mock_domain.NewMockPersonRepository(ctrl)
+	mockRepo := mockDomain.NewMockPersonRepository(ctrl)
 	mockRepo.EXPECT().GetAllPerson().Return([]domain.Person{
 		{
 			ID:        1,
@@ -130,7 +131,7 @@ func TestCreatePerson(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
-	mockRepo := mock_domain.NewMockPersonRepository(ctrl)
+	mockRepo := mockDomain.NewMockPersonRepository(ctrl)
 	mockRepo.EXPECT().CreatePerson(domain.PersonRequest{
 		Name:      "Marcia",
 		Email:     "teste@teste.com",

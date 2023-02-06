@@ -2,6 +2,7 @@ package repository
 
 import (
 	"database/sql"
+
 	"github.com/LayssonENS/go-genealogy-api/domain"
 )
 

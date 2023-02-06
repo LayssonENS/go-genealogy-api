@@ -2,11 +2,12 @@ package http
 
 import (
 	"encoding/json"
-	"github.com/LayssonENS/go-genealogy-api/domain"
-	"github.com/gin-gonic/gin"
 	"net/http"
 	"strconv"
 	"strings"
+
+	"github.com/LayssonENS/go-genealogy-api/domain"
+	"github.com/gin-gonic/gin"
 )
 
 type RelationshipHandler struct {

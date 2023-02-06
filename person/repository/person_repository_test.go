@@ -1,10 +1,11 @@
 package personRepository
 
 import (
-	"github.com/DATA-DOG/go-sqlmock"
-	"github.com/LayssonENS/go-genealogy-api/domain"
 	"testing"
 	"time"
+
+	"github.com/DATA-DOG/go-sqlmock"
+	"github.com/LayssonENS/go-genealogy-api/domain"
 )
 
 func TestCreatePerson(t *testing.T) {

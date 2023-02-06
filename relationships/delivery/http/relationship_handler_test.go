@@ -4,15 +4,16 @@ import (
 	"bytes"
 	"encoding/json"
 	"encoding/xml"
-	"github.com/LayssonENS/go-genealogy-api/domain"
-	mock_relationship "github.com/LayssonENS/go-genealogy-api/relationships/mocks"
-	usecase2 "github.com/LayssonENS/go-genealogy-api/relationships/usecase"
-	"github.com/gin-gonic/gin"
-	"github.com/golang/mock/gomock"
-	"github.com/stretchr/testify/assert"
 	"net/http"
 	"net/http/httptest"
 	"testing"
+
+	"github.com/LayssonENS/go-genealogy-api/domain"
+	mockRelationship "github.com/LayssonENS/go-genealogy-api/relationships/mocks"
+	relationshipUCase "github.com/LayssonENS/go-genealogy-api/relationships/usecase"
+	"github.com/gin-gonic/gin"
+	"github.com/golang/mock/gomock"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestRelationshipHandler_GetRelationshipByID(t *testing.T) {
@@ -20,7 +21,7 @@ func TestRelationshipHandler_GetRelationshipByID(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
-	mockRepo := mock_relationship.NewMockRelationshipRepository(ctrl)
+	mockRepo := mockRelationship.NewMockRelationshipRepository(ctrl)
 	mockRepo.EXPECT().GetRelationshipByID(gomock.Any()).Return(&domain.Member{
 		XMLName: xml.Name{},
 		ID:      1,
@@ -31,7 +32,7 @@ func TestRelationshipHandler_GetRelationshipByID(t *testing.T) {
 	}, nil)
 
 	// "Creating an instance of the handler with mock repository
-	handler := RelationshipHandler{RUseCase: usecase2.NewRelationshipUseCase(mockRepo)}
+	handler := RelationshipHandler{RUseCase: relationshipUCase.NewRelationshipUseCase(mockRepo)}
 
 	// Creating the test context
 	w := httptest.NewRecorder()
@@ -72,11 +73,11 @@ func TestRelationshipHandler_CreateRelationship(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
-	mockRepo := mock_relationship.NewMockRelationshipRepository(ctrl)
+	mockRepo := mockRelationship.NewMockRelationshipRepository(ctrl)
 	mockRepo.EXPECT().CreateRelationship(gomock.Any(), gomock.Any()).Return(nil)
 
 	// "Creating an instance of the handler with mock repository
-	handler := RelationshipHandler{RUseCase: usecase2.NewRelationshipUseCase(mockRepo)}
+	handler := RelationshipHandler{RUseCase: relationshipUCase.NewRelationshipUseCase(mockRepo)}
 
 	// Creating the test context
 	w := httptest.NewRecorder()

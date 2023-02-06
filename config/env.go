@@ -1,8 +1,9 @@
 package config
 
 import (
-	"github.com/Netflix/go-env"
 	"log"
+
+	"github.com/Netflix/go-env"
 )
 
 type Environment struct {

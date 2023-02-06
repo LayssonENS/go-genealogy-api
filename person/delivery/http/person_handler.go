@@ -1,10 +1,11 @@
 package http
 
 import (
-	"github.com/LayssonENS/go-genealogy-api/domain"
-	"github.com/gin-gonic/gin"
 	"net/http"
 	"strconv"
+
+	"github.com/LayssonENS/go-genealogy-api/domain"
+	"github.com/gin-gonic/gin"
 )
 
 type PersonHandler struct {

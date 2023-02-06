@@ -2,8 +2,9 @@ package personRepository
 
 import (
 	"database/sql"
-	"github.com/LayssonENS/go-genealogy-api/domain"
 	"time"
+
+	"github.com/LayssonENS/go-genealogy-api/domain"
 )
 
 const dateLayout = "2006-01-02"

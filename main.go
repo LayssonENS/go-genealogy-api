@@ -3,6 +3,12 @@ package main
 import (
 	"context"
 	"fmt"
+	"net/http"
+	"os"
+	"os/signal"
+	"syscall"
+	"time"
+
 	"github.com/LayssonENS/go-genealogy-api/config"
 	"github.com/LayssonENS/go-genealogy-api/database"
 	_ "github.com/LayssonENS/go-genealogy-api/docs"
@@ -17,11 +23,6 @@ import (
 	"github.com/sirupsen/logrus"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
-	"net/http"
-	"os"
-	"os/signal"
-	"syscall"
-	"time"
 )
 
 // @title Go Genealogy API
