@@ -31,9 +31,11 @@ type Member struct {
 type RelationshipUseCase interface {
 	GetRelationshipByID(personId int64) (*Member, error)
 	CreateRelationship(personId int64, person Relationship) error
+	DeleteRelationship(personId int64) error
 }
 
 type RelationshipRepository interface {
 	GetRelationshipByID(personId int64) (*Member, error)
 	CreateRelationship(personId int64, relationship Relationship) error
+	DeleteRelationship(personId int64) error
 }

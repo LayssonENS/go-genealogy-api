@@ -21,6 +21,7 @@ func NewRelationshipHandler(routerGroup *gin.Engine, us domain.RelationshipUseCa
 
 	routerGroup.GET("/v1/relationships/:personId", handler.GetRelationshipByID)
 	routerGroup.POST("/v1/relationships/:personId", handler.CreateRelationship)
+	routerGroup.DELETE("/v1/relationships/:personId", handler.DeleteRelationship)
 }
 
 // GetRelationshipByID godoc
@@ -102,4 +103,32 @@ func (h *RelationshipHandler) CreateRelationship(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusCreated, gin.H{"msg": "Created"})
+}
+
+// DeleteRelationship godoc
+// @Summary Route to delete relationships
+// @Description Delete all relationships from person (parent and children)
+// @Tags Relationship
+// @Accept  json
+// @Produce  json
+// @Param personId path int true "Person ID"
+// @Success 204 {string} string
+// @Failure 400 {object} domain.ErrorResponse
+// @Failure 422 {object} domain.ErrorResponse
+// @Router /v1/relationships/{personId} [DELETE]
+func (h *RelationshipHandler) DeleteRelationship(c *gin.Context) {
+	idParam, err := strconv.Atoi(c.Param("personId"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, domain.ErrorResponse{ErrorMessage: err.Error()})
+		return
+	}
+	relationshipId := int64(idParam)
+
+	err = h.RUseCase.DeleteRelationship(relationshipId)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, domain.ErrorResponse{ErrorMessage: err.Error()})
+		return
+	}
+
+	c.Status(http.StatusNoContent)
 }

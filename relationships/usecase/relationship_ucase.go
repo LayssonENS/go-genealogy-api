@@ -31,3 +31,12 @@ func (a *relationshipUseCase) CreateRelationship(personId int64, relationship do
 
 	return nil
 }
+
+func (a *relationshipUseCase) DeleteRelationship(personId int64) error {
+	err := a.relationshipRepository.DeleteRelationship(personId)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}

@@ -155,6 +155,34 @@ paths:
       tags:
       - Person
   /v1/relationships/{personId}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete all relationships from person (parent and children)
+      parameters:
+      - description: Person ID
+        in: path
+        name: personId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/domain.ErrorResponse'
+        "422":
+          description: Unprocessable Entity
+          schema:
+            $ref: '#/definitions/domain.ErrorResponse'
+      summary: Route to delete relationships
+      tags:
+      - Relationship
     get:
       consumes:
       - application/json

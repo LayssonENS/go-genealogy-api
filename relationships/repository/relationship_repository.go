@@ -215,3 +215,16 @@ func (p *postgresRelationshipRepo) getRelationships(personId int64) ([]domain.Re
 	return parents, nil
 
 }
+
+// DeleteRelationship : Deletes a relationship between two people in the Postgres repository
+func (p *postgresRelationshipRepo) DeleteRelationship(personId int64) error {
+	query := `DELETE FROM relationships
+			  WHERE person_id = $1 OR related_person_id = $1`
+
+	_, err := p.DB.Exec(query, personId)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
