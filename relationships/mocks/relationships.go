@@ -48,6 +48,20 @@ func (mr *MockRelationshipUseCaseMockRecorder) CreateRelationship(personId, pers
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateRelationship", reflect.TypeOf((*MockRelationshipUseCase)(nil).CreateRelationship), personId, person)
 }
 
+// DeleteRelationship mocks base method.
+func (m *MockRelationshipUseCase) DeleteRelationship(personId int64) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "DeleteRelationship", personId)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// DeleteRelationship indicates an expected call of DeleteRelationship.
+func (mr *MockRelationshipUseCaseMockRecorder) DeleteRelationship(personId interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteRelationship", reflect.TypeOf((*MockRelationshipUseCase)(nil).DeleteRelationship), personId)
+}
+
 // GetRelationshipByID mocks base method.
 func (m *MockRelationshipUseCase) GetRelationshipByID(personId int64) (*domain.Member, error) {
 	m.ctrl.T.Helper()
@@ -98,6 +112,20 @@ func (m *MockRelationshipRepository) CreateRelationship(personId int64, relation
 func (mr *MockRelationshipRepositoryMockRecorder) CreateRelationship(personId, relationship interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateRelationship", reflect.TypeOf((*MockRelationshipRepository)(nil).CreateRelationship), personId, relationship)
+}
+
+// DeleteRelationship mocks base method.
+func (m *MockRelationshipRepository) DeleteRelationship(personId int64) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "DeleteRelationship", personId)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// DeleteRelationship indicates an expected call of DeleteRelationship.
+func (mr *MockRelationshipRepositoryMockRecorder) DeleteRelationship(personId interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteRelationship", reflect.TypeOf((*MockRelationshipRepository)(nil).DeleteRelationship), personId)
 }
 
 // GetRelationshipByID mocks base method.
